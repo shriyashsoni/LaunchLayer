@@ -879,16 +879,16 @@ select {
   }
 
   .site-footer__logo {
-    flex-basis: clamp(56px, 15vw, 76px);
-    width: clamp(56px, 15vw, 76px);
-    height: clamp(56px, 15vw, 76px);
-    margin-right: clamp(10px, 3vw, 16px);
+    flex-basis: clamp(42px, 11vw, 58px);
+    width: clamp(42px, 11vw, 58px);
+    height: clamp(42px, 11vw, 58px);
+    margin-right: clamp(8px, 2.4vw, 12px);
   }
 
   .site-footer__brand > span:last-child {
-    font-size: clamp(56px, 20vw, 96px);
-    letter-spacing: -0.075em;
-    line-height: 0.78;
+    font-size: clamp(42px, 13.6vw, 66px);
+    letter-spacing: -0.07em;
+    line-height: 0.86;
     white-space: nowrap;
   }
 
@@ -901,5 +901,7 @@ select {
     line-height: 1.35;
   }
 }
+
+
 
 
