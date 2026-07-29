@@ -465,11 +465,13 @@ function LaunchNetworkStrip() {
 function Navbar({ page, setPage }: { page: PageKey; setPage: (page: PageKey) => void }) {
   const [open, setOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [mobileGroup, setMobileGroup] = useState<string | null>(null);
 
   const go = (target: PageKey) => {
     setPage(target);
     setOpen(false);
     setActiveMenu(null);
+    setMobileGroup(null);
   };
 
   const isGroupActive = (links: Array<{ page: PageKey }>) => links.some((link) => link.page === page);
@@ -546,27 +548,40 @@ function Navbar({ page, setPage }: { page: PageKey; setPage: (page: PageKey) => 
               </button>
             </div>
             <div className="py-4">
-              <button onClick={() => go("home")} className="mb-3 w-full rounded-xl bg-white px-3 py-3 text-left text-lg font-medium">Home</button>
+              <button onClick={() => go("home")} className="mb-3 flex w-full items-center justify-between rounded-2xl bg-white px-4 py-4 text-left text-lg font-medium ring-1 ring-black/5">
+                Home
+                <ArrowRight className="h-4 w-4" />
+              </button>
               <div className="grid gap-3">
-                {menuGroups.map((group) => (
-                  <div key={group.label} className="rounded-2xl bg-white p-3 ring-1 ring-black/5">
-                    <div className="px-1 pb-2">
-                      <p className="text-sm font-medium text-black">{group.label}</p>
-                      <p className="mt-1 text-xs text-black/50">{group.summary}</p>
-                    </div>
-                    <div className="grid gap-1">
-                      {group.links.map((link) => (
-                        <button key={link.page} onClick={() => go(link.page)} className="flex items-center justify-between rounded-xl px-3 py-3 text-left hover:bg-[#F5F5F5]">
-                          <span>
-                            <span className="block text-base font-medium text-black">{link.label}</span>
-                            <span className="block text-xs text-black/50">{link.desc}</span>
-                          </span>
+                {menuGroups.map((group) => {
+                  const expanded = mobileGroup === group.label;
+                  return (
+                    <div key={group.label} className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
+                      <button type="button" onClick={() => setMobileGroup(expanded ? null : group.label)} className="flex w-full items-center justify-between gap-3 p-4 text-left">
+                        <span>
+                          <span className="block text-base font-semibold text-black">{group.label}</span>
+                          <span className="mt-1 block text-xs leading-5 text-black/50">{group.summary}</span>
+                        </span>
+                        <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full transition ${expanded ? "rotate-90 bg-black text-white" : "bg-[#F5F5F5] text-black"}`}>
                           <ArrowRight className="h-4 w-4" />
-                        </button>
-                      ))}
+                        </span>
+                      </button>
+                      {expanded && (
+                        <div className="grid gap-1 border-t border-black/10 p-2">
+                          {group.links.map((link) => (
+                            <button key={link.page} onClick={() => go(link.page)} className="flex items-center justify-between rounded-xl px-3 py-3 text-left hover:bg-[#F5F5F5]">
+                              <span>
+                                <span className="block text-base font-medium text-black">{link.label}</span>
+                                <span className="block text-xs leading-5 text-black/50">{link.desc}</span>
+                              </span>
+                              <ArrowRight className="h-4 w-4" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1754,6 +1769,7 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
       ["Book Launch", "contact"],
     ],
   ] as const;
+  const footerLabels = ["Company", "Network", "Resources"] as const;
 
   return (
     <footer className="site-footer">
@@ -1765,6 +1781,7 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
           <h2>Proven token launch infrastructure for listings, communities, partners, events, and funding routes.</h2>
           {linkGroups.map((group, index) => (
             <nav key={index} className="site-footer__nav" aria-label={`Footer links ${index + 1}`}>
+              <p className="site-footer__nav-title">{footerLabels[index]}</p>
               {group.map(([label, target]) => (
                 <button key={label} onClick={() => setPage(target)}>
                   {label}
@@ -1863,6 +1880,9 @@ export default function App() {
     </main>
   );
 }
+
+
+
 
 
 
