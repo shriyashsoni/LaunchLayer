@@ -614,7 +614,7 @@ function HeroSection({ setPage }: { setPage: (page: PageKey) => void }) {
             <ArrowButton onClick={() => setPage("contact")}>Start launch</ArrowButton>
 
           </div>
-          <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-black/10 bg-white/88 px-4 py-4 backdrop-blur-xl md:px-8">
+          <div className="hero-listing-strip absolute bottom-0 left-0 right-0 z-20 border-t border-black/10 bg-white/88 px-4 py-4 backdrop-blur-xl md:px-8">
             <div className="mx-auto flex max-w-[88rem] items-center gap-5">
               <span className="shrink-0 text-xs font-semibold uppercase tracking-[0.22em] text-black/45">Listing routes</span>
               <div className="min-w-0 flex-1 overflow-hidden">
@@ -1887,75 +1887,4 @@ export default function App() {
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
