@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f5f5"/>
+  <path d="M0 500 C180 430 320 590 510 500 C710 405 825 230 1200 310 L1200 630 L0 630 Z" fill="#050808"/>
+  <circle cx="1010" cy="126" r="190" fill="#d9d9d9" opacity="0.75"/>
+  <path d="M 178.005 241.173 C 178.448 206.208 206.93 178 242 178 L 242 114 L 178 114 C 178 149.346 149.346 178 114 178 L 114 242 L 178 242 Z M 242 306 L 114 306 C 78.654 306 50 277.346 50 242 L 50 114 L 114 114 L 114 50 L 242 50 C 277.346 50 306 78.654 306 114 L 306 242 L 242 242 Z" fill="#050808"/>
+  <text x="380" y="178" fill="#050808" font-family="Inter, Arial, sans-serif" font-size="88" font-weight="800" letter-spacing="-7">LaunchLayer</text>
+  <text x="386" y="238" fill="#050808" opacity="0.62" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="2">LAUNCH EVERYWHERE</text>
+  <text x="62" y="425" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="750" letter-spacing="-2">Token listings, launch rooms, events, partners, and growth systems.</text>
+  <text x="66" y="496" fill="#ffffff" opacity="0.68" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="500">Independent launch support company for serious market entry.</text>
+</svg>

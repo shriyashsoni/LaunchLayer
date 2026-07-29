@@ -1,0 +1,11 @@
+{
+  "name": "LaunchLayer",
+  "short_name": "LaunchLayer",
+  "description": "Token launch infrastructure for listings, partners, events, communities, and growth.",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "theme_color": "#f5f5f5",
+  "background_color": "#f5f5f5",
+  "display": "standalone"
+}
