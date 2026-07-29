@@ -422,13 +422,13 @@ function ArrowButton({ children, onClick, light = false }: { children: React.Rea
 
 function BrandMarquee({ brands, variant }: { brands: typeof exchangeBrands; variant: "hero" | "backers" }) {
   const className = variant === "hero" ? "marquee-track" : "backers-track";
-  const itemClass = variant === "hero" ? "mx-7 text-black/60" : "mx-10 text-black/50";
+  const itemClass = variant === "hero" ? "mx-8 text-black/78" : "mx-10 text-black/50";
 
   return (
     <div className="w-full overflow-hidden">
       <div className={className}>
         {[...brands, ...brands].map((brand, index) => (
-          <span key={`${brand.name}-${index}`} className={`shrink-0 whitespace-nowrap ${itemClass}`} style={brand.style}>
+          <span key={`${brand.name}-${index}`} className={`shrink-0 whitespace-nowrap ${itemClass}`} style={variant === "hero" ? { ...brand.style, fontSize: "clamp(1rem, 2.2vw, 1.55rem)", fontWeight: 850 } : brand.style}>
             {brand.name}
           </span>
         ))}
@@ -598,7 +598,7 @@ function HeroSection({ setPage }: { setPage: (page: PageKey) => void }) {
         <div className="hero-card relative h-[calc(100vh-96px)] w-full overflow-hidden rounded-2xl">
           <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" src={heroVideo} />
           <div className="absolute inset-0 bg-white/18" />
-          <div className="relative z-10 flex h-full flex-col items-start justify-start p-7 pt-28 sm:p-12 sm:pt-36">
+          <div className="relative z-10 flex h-full flex-col items-start justify-start p-7 pb-28 pt-28 sm:p-12 sm:pb-32 sm:pt-36">
             <span className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-black backdrop-blur">
               <Sparkles className="h-4 w-4" />
               Token listing agency for serious launches
@@ -612,8 +612,14 @@ function HeroSection({ setPage }: { setPage: (page: PageKey) => void }) {
               A premium launch desk for listings, meme coin platforms, DEX visibility, exchange outreach, and growth systems that make your token easier to find and trust.
             </p>
             <ArrowButton onClick={() => setPage("contact")}>Start launch</ArrowButton>
-            <div className="mt-24 w-full max-w-md overflow-hidden">
-              <BrandMarquee brands={exchangeBrands} variant="hero" />
+
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-black/10 bg-white/88 px-4 py-4 backdrop-blur-xl md:px-8">
+            <div className="mx-auto flex max-w-[88rem] items-center gap-5">
+              <span className="shrink-0 text-xs font-semibold uppercase tracking-[0.22em] text-black/45">Listing routes</span>
+              <div className="min-w-0 flex-1 overflow-hidden">
+                <BrandMarquee brands={exchangeBrands} variant="hero" />
+              </div>
             </div>
           </div>
         </div>
@@ -660,6 +666,7 @@ function HomePage({ setPage }: { setPage: (page: PageKey) => void }) {
               <p className="text-base text-white/60">Skip scattered launch tasks. We organize the playbook, assets, and follow-ups in one room.</p><button onClick={() => setPage("community")} className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">Community desk <ArrowRight className="h-4 w-4" /></button>
             </div>
           </div>
+
         </div>
       </section><LaunchStatsSection /><UseCasesSection setPage={setPage} />
     </>
@@ -1880,6 +1887,10 @@ export default function App() {
     </main>
   );
 }
+
+
+
+
 
 
 
