@@ -336,29 +336,24 @@ const faqs = [
 const logoPath = "M 128.005 191.173 C 128.448 156.208 156.93 128 192 128 L 192 64 L 128 64 C 128 99.346 99.346 128 64 128 L 64 192 L 128 192 Z M 192 256 L 64 256 C 28.654 256 0 227.346 0 192 L 0 64 L 64 64 L 64 0 L 192 0 C 227.346 0 256 28.654 256 64 L 256 192 L 192 192 Z";
 
 const brandAssets = [
-  { name: "Primary Lockup", type: "Full logo", bg: "#F5F5F5", fg: "#000000", accent: "#E8E8E8", mode: "lockup" },
-  { name: "Dark Lockup", type: "Exchange deck", bg: "#050808", fg: "#FFFFFF", accent: "#1D2424", mode: "lockup" },
-  { name: "Launch Purple", type: "Campaign mark", bg: "#7342E2", fg: "#FFFFFF", accent: "#8F68EA", mode: "badge" },
-  { name: "Signal Green", type: "Community mark", bg: "#DDFB6D", fg: "#111111", accent: "#C4E655", mode: "badge" },
-  { name: "Mono Mark", type: "Icon only", bg: "#FFFFFF", fg: "#000000", accent: "#EEEEEE", mode: "mark" },
+  { name: "Primary Lockup", type: "Full logo / light surface", bg: "#F5F5F5", fg: "#000000", accent: "#DDFB6D", mode: "lockup" },
+  { name: "Purple Lockup", type: "Full logo / campaign surface", bg: "#7342E2", fg: "#FFFFFF", accent: "#DDFB6D", mode: "lockup" },
+  { name: "Green Lockup", type: "Full logo / launch signal", bg: "#DDFB6D", fg: "#050808", accent: "#FFFFFF", mode: "lockup" },
+  { name: "Dark Lockup", type: "Full logo / deck surface", bg: "#050808", fg: "#FFFFFF", accent: "#DDFB6D", mode: "lockup" },
+  { name: "Purple Mark", type: "Icon only / social avatar", bg: "#7342E2", fg: "#FFFFFF", accent: "#DDFB6D", mode: "mark" },
+  { name: "Green Mark", type: "Icon only / app badge", bg: "#DDFB6D", fg: "#050808", accent: "#FFFFFF", mode: "mark" },
 ] as const;
 
 function buildLogoSvg(asset: (typeof brandAssets)[number]) {
-  const word = `<text x="330" y="154" fill="${asset.fg}" font-family="Inter, Arial, sans-serif" font-size="78" font-weight="800" letter-spacing="-6">LaunchLayer</text>`;
-  const sub = `<text x="334" y="208" fill="${asset.fg}" opacity="0.56" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="2">LAUNCH EVERYWHERE</text>`;
-  const mark = `<path d="${logoPath}" fill="${asset.fg}" transform="translate(48 48) scale(0.75)"/>`;
-  const pattern = Array.from({ length: 9 }, (_, i) => `<path d="${logoPath}" fill="${asset.fg}" opacity="${0.08 + (i % 3) * 0.06}" transform="translate(${40 + (i % 3) * 250} ${30 + Math.floor(i / 3) * 150}) scale(0.34)"/>`).join("");
-  if (asset.mode === "mark") {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="520" viewBox="0 0 520 520"><rect width="520" height="520" rx="56" fill="${asset.bg}"/><circle cx="260" cy="260" r="184" fill="${asset.accent}" opacity="0.45"/><path d="${logoPath}" fill="${asset.fg}" transform="translate(116 116) scale(1.12)"/></svg>`;
+  const isMark = asset.mode === "mark";
+  const shadow = asset.bg === "#F5F5F5" || asset.bg === "#DDFB6D" ? "0.16" : "0.28";
+
+  if (isMark) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="LaunchLayer ${asset.name}"><rect width="640" height="640" rx="112" fill="${asset.bg}"/><circle cx="462" cy="150" r="146" fill="${asset.accent}" opacity="0.34"/><circle cx="166" cy="506" r="120" fill="${asset.accent}" opacity="0.16"/><g filter="url(#brandShadow)"><path d="${logoPath}" fill="${asset.fg}" transform="translate(168 168) scale(1.1875)"/></g><defs><filter id="brandShadow" x="120" y="120" width="400" height="400" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="28" stdDeviation="32" flood-color="#000000" flood-opacity="${shadow}"/></filter></defs></svg>`;
   }
 
-  if (asset.mode === "badge") {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520"><rect width="900" height="520" rx="56" fill="${asset.bg}"/><circle cx="742" cy="120" r="210" fill="${asset.accent}" opacity="0.42"/><path d="${logoPath}" fill="${asset.fg}" transform="translate(70 106) scale(1.18)"/><text x="390" y="232" fill="${asset.fg}" font-family="Inter, Arial, sans-serif" font-size="86" font-weight="850" letter-spacing="-7">LaunchLayer</text><text x="394" y="286" fill="${asset.fg}" opacity="0.62" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">LISTING NETWORK / MARKET ENTRY</text></svg>`;
-  }
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="360" viewBox="0 0 1100 360"><rect width="1100" height="360" rx="44" fill="${asset.bg}"/><circle cx="160" cy="180" r="122" fill="${asset.accent}" opacity="0.42"/>${mark}${word}${sub}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="LaunchLayer ${asset.name}"><rect width="1200" height="520" rx="64" fill="${asset.bg}"/><circle cx="1008" cy="120" r="210" fill="${asset.accent}" opacity="0.24"/><circle cx="132" cy="436" r="132" fill="${asset.accent}" opacity="0.14"/><g filter="url(#brandShadow)"><path d="${logoPath}" fill="${asset.fg}" transform="translate(96 154) scale(0.828125)"/></g><text x="356" y="274" fill="${asset.fg}" font-family="Inter, Arial, Helvetica, sans-serif" font-size="112" font-weight="800">LaunchLayer</text><text x="362" y="334" fill="${asset.fg}" opacity="0.58" font-family="Inter, Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="3">MARKET ENTRY OPERATIONS</text><defs><filter id="brandShadow" x="60" y="116" width="300" height="300" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#000000" flood-opacity="${shadow}"/></filter></defs></svg>`;
 }
-
 function downloadTextFile(filename: string, content: string, type = "image/svg+xml") {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
@@ -1887,4 +1882,5 @@ export default function App() {
     </main>
   );
 }
+
 
