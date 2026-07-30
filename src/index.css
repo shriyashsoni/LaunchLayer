@@ -245,6 +245,19 @@ a {
   color: #fff;
 }
 
+
+.event-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.event-link-card:hover .event-card__summary,
+.event-link-card:hover h2 {
+  color: #050808;
+}
+
 .launch-row::before {
   content: "";
   position: absolute;

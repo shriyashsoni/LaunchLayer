@@ -1026,19 +1026,35 @@ function EventsPage({ setPage }: { setPage: (page: PageKey) => void }) {
 
   return (
     <PageShell title="Events that turn launches into moments people can follow." kicker="Events">
-      <div className="mt-14 grid gap-4 md:grid-cols-2">
-        {events.map((event, index) => (
-          <article key={event._id ?? event.title} className="launch-row grid min-h-64 gap-5 rounded-2xl bg-white p-7 ring-1 ring-black/5">
-            <div className="flex items-center justify-between">
-              <span className="text-4xl font-medium text-black/25">{String(index + 1).padStart(2, "0")}</span>
-              <span className="rounded-full bg-[#F5F5F5] px-4 py-2 text-sm font-medium text-black/60">{event.meta ?? event.tag ?? "Event"}</span>
-            </div>
-            <div>
-              <h2 className="text-3xl font-medium text-black" style={{ letterSpacing: "-0.03em" }}>{event.title}</h2>
-              <p className="mt-4 text-base leading-relaxed text-black/60">{event.summary}</p>
-            </div>
-          </article>
-        ))}
+      <div className="mt-14 grid gap-5 md:grid-cols-2">
+        {events.map((event) => {
+          const href = event.href?.trim();
+          const cardContent = (
+            <>
+              {event.coverImageUrl && (
+                <div className="mb-6 aspect-[16/9] overflow-hidden rounded-2xl bg-[#F5F5F5] ring-1 ring-black/5">
+                  <img src={event.coverImageUrl} alt={event.title} className="h-full w-full object-cover" />
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-3">
+                <span className="rounded-full bg-[#F5F5F5] px-4 py-2 text-sm font-medium text-black/60">{event.meta ?? event.tag ?? "Event"}</span>
+                {href && <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-black text-white"><ArrowRight className="h-4 w-4" /></span>}
+              </div>
+              <h2 className="mt-8 text-3xl font-medium text-black" style={{ letterSpacing: "-0.03em" }}>{event.title}</h2>
+              <p className="event-card__summary mt-4 text-base leading-relaxed text-black/60">{event.summary}</p>
+            </>
+          );
+
+          return href ? (
+            <a key={event._id ?? event.title} href={href} target="_blank" rel="noreferrer" className="launch-row event-link-card block min-h-64 rounded-2xl bg-white p-5 ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(0,0,0,0.09)] md:p-7">
+              {cardContent}
+            </a>
+          ) : (
+            <article key={event._id ?? event.title} className="launch-row block min-h-64 rounded-2xl bg-white p-5 ring-1 ring-black/5 md:p-7">
+              {cardContent}
+            </article>
+          );
+        })}
       </div>
       <div className="mt-14 rounded-2xl bg-[#2B2644] p-8 text-white md:p-12">
         <h2 className="max-w-4xl text-4xl font-medium leading-tight md:text-5xl" style={{ letterSpacing: "-0.03em" }}>We organize AMAs, spaces, launch rooms, demo days, creator challenges, and community activations.</h2>
@@ -1887,6 +1903,4 @@ export default function App() {
     </main>
   );
 }
-
-
 
