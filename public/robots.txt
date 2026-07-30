@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# LaunchLayer is a single-page app. Public content is indexable; private admin is protected by login.

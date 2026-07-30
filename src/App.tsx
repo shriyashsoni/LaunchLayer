@@ -29,6 +29,161 @@ type NavItem = {
   page: PageKey;
 };
 
+type SeoMeta = {
+  title: string;
+  description: string;
+  image: string;
+  keywords: string;
+  robots?: string;
+};
+
+const seoPages: Record<PageKey, SeoMeta> = {
+  home: {
+    title: "LaunchLayer | Token Launch Infrastructure",
+    description: "LaunchLayer helps token teams launch, list, promote, and grow across top token platforms, DEX trackers, meme coin boards, communities, events, partners, and funding routes.",
+    image: "/og-launchlayer.png",
+    keywords: "token launch agency, token listing agency, crypto listing service, meme coin launch, DEX listing, CoinMarketCap listing, CoinGecko listing, crypto growth agency",
+  },
+  listings: {
+    title: "Token Listing Routes | LaunchLayer",
+    description: "Prepare reviewer-ready token listing packs for CoinMarketCap, CoinGecko, DEX trackers, meme coin platforms, launchpads, and exchange outreach routes.",
+    image: "/og-listings.png",
+    keywords: "token listings, CoinMarketCap listing, CoinGecko listing, DexScreener, DEXTools, token data platforms, exchange listing support",
+  },
+  launch: {
+    title: "Launch System | LaunchLayer",
+    description: "A structured launch system for token teams: contract proof, launch scripts, reviewer links, community rooms, submission packs, and market entry execution.",
+    image: "/og-launch.png",
+    keywords: "token launch system, crypto launch plan, meme coin launch, token launch checklist, launch room, token launch execution",
+  },
+  growth: {
+    title: "Growth Desk | LaunchLayer",
+    description: "Token growth support for KOL routing, community campaigns, reporting, media calendars, chart visibility, and post-launch market momentum.",
+    image: "/og-growth.png",
+    keywords: "crypto growth agency, token marketing, KOL campaign, meme coin marketing, Telegram growth, token community growth",
+  },
+  plans: {
+    title: "Launch Plans | LaunchLayer",
+    description: "Choose token launch support rooms for listings, growth, partner routing, event operations, community coordination, and funding preparation.",
+    image: "/og-launchlayer.png",
+    keywords: "token launch plans, crypto agency packages, token listing packages, launch support pricing",
+  },
+  ecosystem: {
+    title: "Company Ecosystem | LaunchLayer",
+    description: "Explore the LaunchLayer operating ecosystem across listing desks, growth systems, community rooms, event organization, partner routing, and funding support.",
+    image: "/og-partners.png",
+    keywords: "crypto ecosystem growth, token partner network, launch company, token market entry partners",
+  },
+  partners: {
+    title: "Partner Ecosystem | LaunchLayer",
+    description: "LaunchLayer connects token teams with partner routes for launchpads, exchanges, media, analytics, community growth, security proof, and ecosystem visibility.",
+    image: "/og-partners.png",
+    keywords: "crypto partners, token launchpads, exchange partners, crypto media partners, token analytics, KYC audit liquidity lock",
+  },
+  events: {
+    title: "Token Launch Events | LaunchLayer",
+    description: "Organize AMAs, X Spaces, pitch days, demo rooms, community activations, creator challenges, and token launch events with LaunchLayer.",
+    image: "/og-events.png",
+    keywords: "crypto events, token launch event, AMA event, X Spaces, pitch day, demo day, community activation",
+  },
+  work: {
+    title: "Past Work | LaunchLayer",
+    description: "View LaunchLayer launch proof, public case materials, client campaign visuals, previous token work, documents, metrics, and approved project showcases.",
+    image: "/og-work.png",
+    keywords: "token launch case studies, crypto agency portfolio, launch proof, token campaign results, previous token launches",
+  },
+  blog: {
+    title: "Crypto Launch Blog | LaunchLayer",
+    description: "Read token launch guides, listing playbooks, partner routing notes, community growth articles, market entry research, and launch operations insights.",
+    image: "/og-blog.png",
+    keywords: "token launch blog, crypto listing guide, CoinMarketCap guide, CoinGecko guide, meme coin launch guide, crypto marketing articles",
+  },
+  funding: {
+    title: "Funding Routes | LaunchLayer",
+    description: "Prepare grant notes, investor decks, market entry budgets, partner asks, treasury plans, and funding materials for token launches.",
+    image: "/og-launchlayer.png",
+    keywords: "crypto funding, token grants, investor deck crypto, market maker budget, token treasury planning",
+  },
+  community: {
+    title: "Community Operations | LaunchLayer",
+    description: "Coordinate Telegram, Discord, X, creators, moderators, ambassadors, launch announcements, quests, and holder updates for token communities.",
+    image: "/og-growth.png",
+    keywords: "token community management, Telegram crypto community, Discord token community, crypto ambassadors, holder updates",
+  },
+  brand: {
+    title: "Brand Kit | LaunchLayer",
+    description: "Download LaunchLayer logo marks, lockups, campaign badges, SVG files, PNG files, and brand assets for approved usage.",
+    image: "/og-brand.png",
+    keywords: "LaunchLayer brand kit, LaunchLayer logo, crypto brand assets, token agency logo",
+  },
+  privacy: {
+    title: "Privacy Policy | LaunchLayer",
+    description: "Read how LaunchLayer handles project information, contact details, submitted launch materials, documents, partner routing data, and privacy requests.",
+    image: "/og-launchlayer.png",
+    keywords: "LaunchLayer privacy policy, token launch privacy, crypto agency privacy",
+  },
+  terms: {
+    title: "Terms of Use | LaunchLayer",
+    description: "Read the terms for using LaunchLayer services, independent launch support, project materials, scope, approvals, and operational limitations.",
+    image: "/og-launchlayer.png",
+    keywords: "LaunchLayer terms, token launch terms, crypto agency terms of use",
+  },
+  admin: {
+    title: "Admin Portal | LaunchLayer",
+    description: "Private LaunchLayer operations portal.",
+    image: "/og-launchlayer.png",
+    keywords: "LaunchLayer admin",
+    robots: "noindex,nofollow,noarchive",
+  },
+  contact: {
+    title: "Book a Token Launch | LaunchLayer",
+    description: "Request a LaunchLayer launch map for listings, growth, community, events, partner routing, funding prep, and token market visibility.",
+    image: "/og-contact.png",
+    keywords: "book token launch, token launch agency contact, crypto listing support contact, meme coin launch agency",
+  },
+};
+
+function setMetaTag(attribute: "name" | "property", key: string, content: string) {
+  let element = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(attribute, key);
+    document.head.appendChild(element);
+  }
+  element.content = content;
+}
+
+function setLinkTag(rel: string, href: string) {
+  let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+  if (!element) {
+    element = document.createElement("link");
+    element.rel = rel;
+    document.head.appendChild(element);
+  }
+  element.href = href;
+}
+
+function updateStructuredData(page: PageKey, meta: SeoMeta, url: string) {
+  let element = document.getElementById("launchlayer-structured-data") as HTMLScriptElement | null;
+  if (!element) {
+    element = document.createElement("script");
+    element.id = "launchlayer-structured-data";
+    element.type = "application/ld+json";
+    document.head.appendChild(element);
+  }
+
+  element.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": page === "blog" ? "Blog" : page === "events" ? "EventSeries" : "Organization",
+    name: "LaunchLayer",
+    url,
+    description: meta.description,
+    logo: `${window.location.origin}/favicon.svg`,
+    image: `${window.location.origin}${meta.image}`,
+    sameAs: [],
+    serviceType: "Token launch support, listing preparation, community operations, growth campaigns, events, partner routing, and funding preparation",
+  });
+}
 const heroVideo =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4";
 
@@ -1929,28 +2084,7 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
 export default function App() {
   const [page, setPageState] = useState<PageKey>(getInitialPage);
 
-  const pageTitle = useMemo(() => {
-    const titles: Record<PageKey, string> = {
-      home: "LaunchLayer | Token Launch Company",
-      listings: "Listings | LaunchLayer",
-      launch: "Launch System | LaunchLayer",
-      growth: "Growth Desk | LaunchLayer",
-      plans: "Plans | LaunchLayer",
-      ecosystem: "Ecosystem | LaunchLayer",
-      partners: "Partners | LaunchLayer",
-      events: "Events | LaunchLayer",
-      work: "Past Work | LaunchLayer",
-      blog: "Blog | LaunchLayer",
-      funding: "Funding | LaunchLayer",
-      community: "Community | LaunchLayer",
-      brand: "Brand Kit | LaunchLayer",
-      privacy: "Privacy Policy | LaunchLayer",
-      terms: "Terms of Use | LaunchLayer",
-      admin: "Admin Portal | LaunchLayer",
-      contact: "Contact | LaunchLayer",
-    };
-    return titles[page];
-  }, [page]);
+  const pageMeta = useMemo(() => seoPages[page], [page]);
 
   const setPage = (target: PageKey) => {
     setPageState(target);
@@ -1959,9 +2093,26 @@ export default function App() {
   };
 
   useEffect(() => {
-    document.title = pageTitle;
-  }, [pageTitle]);
-
+    const url = `${window.location.origin}${window.location.pathname}#${page}`;
+    const imageUrl = `${window.location.origin}${pageMeta.image}`;
+    document.title = pageMeta.title;
+    setMetaTag("name", "description", pageMeta.description);
+    setMetaTag("name", "keywords", pageMeta.keywords);
+    setMetaTag("name", "robots", pageMeta.robots ?? "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1");
+    setMetaTag("property", "og:title", pageMeta.title);
+    setMetaTag("property", "og:description", pageMeta.description);
+    setMetaTag("property", "og:url", url);
+    setMetaTag("property", "og:image", imageUrl);
+    setMetaTag("property", "og:image:secure_url", imageUrl);
+    setMetaTag("property", "og:image:type", "image/png");
+    setMetaTag("property", "og:image:alt", `${pageMeta.title} preview`);
+    setMetaTag("name", "twitter:title", pageMeta.title);
+    setMetaTag("name", "twitter:description", pageMeta.description);
+    setMetaTag("name", "twitter:image", imageUrl);
+    setMetaTag("name", "twitter:image:alt", `${pageMeta.title} preview`);
+    setLinkTag("canonical", url);
+    updateStructuredData(page, pageMeta, url);
+  }, [page, pageMeta]);
   useEffect(() => {
     const onPopState = () => setPageState(getInitialPage());
     window.addEventListener("popstate", onPopState);
@@ -2002,6 +2153,9 @@ export default function App() {
     </main>
   );
 }
+
+
+
 
 
 
