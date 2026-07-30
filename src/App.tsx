@@ -49,7 +49,7 @@ const seoPages: Record<PageKey, SeoMeta> = {
   home: {
     title: "LaunchLayer | Token Launch Infrastructure",
     description: "LaunchLayer helps token teams launch, list, promote, and grow across top token platforms, DEX trackers, meme coin boards, communities, events, partners, and funding routes.",
-    image: "/og-launchlayer.png",
+    image: "/og-launchlayer-v2.png",
     keywords: "token launch agency, token listing agency, crypto listing service, meme coin launch, DEX listing, CoinMarketCap listing, CoinGecko listing, crypto growth agency",
   },
   listings: {
@@ -73,7 +73,7 @@ const seoPages: Record<PageKey, SeoMeta> = {
   plans: {
     title: "Launch Plans | LaunchLayer",
     description: "Choose token launch support rooms for listings, growth, partner routing, event operations, community coordination, and funding preparation.",
-    image: "/og-launchlayer.png",
+    image: "/og-launchlayer-v2.png",
     keywords: "token launch plans, crypto agency packages, token listing packages, launch support pricing",
   },
   ecosystem: {
@@ -109,7 +109,7 @@ const seoPages: Record<PageKey, SeoMeta> = {
   funding: {
     title: "Funding Routes | LaunchLayer",
     description: "Prepare grant notes, investor decks, market entry budgets, partner asks, treasury plans, and funding materials for token launches.",
-    image: "/og-launchlayer.png",
+    image: "/og-launchlayer-v2.png",
     keywords: "crypto funding, token grants, investor deck crypto, market maker budget, token treasury planning",
   },
   community: {
@@ -127,19 +127,19 @@ const seoPages: Record<PageKey, SeoMeta> = {
   privacy: {
     title: "Privacy Policy | LaunchLayer",
     description: "Read how LaunchLayer handles project information, contact details, submitted launch materials, documents, partner routing data, and privacy requests.",
-    image: "/og-launchlayer.png",
+    image: "/og-launchlayer-v2.png",
     keywords: "LaunchLayer privacy policy, token launch privacy, crypto agency privacy",
   },
   terms: {
     title: "Terms of Use | LaunchLayer",
     description: "Read the terms for using LaunchLayer services, independent launch support, project materials, scope, approvals, and operational limitations.",
-    image: "/og-launchlayer.png",
+    image: "/og-launchlayer-v2.png",
     keywords: "LaunchLayer terms, token launch terms, crypto agency terms of use",
   },
   admin: {
     title: "Admin Portal | LaunchLayer",
     description: "Private LaunchLayer operations portal.",
-    image: "/og-launchlayer.png",
+    image: "/og-launchlayer-v2.png",
     keywords: "LaunchLayer admin",
     robots: "noindex,nofollow,noarchive",
   },
