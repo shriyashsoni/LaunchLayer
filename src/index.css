@@ -236,16 +236,13 @@ a {
 }
 
 .platform-tile:hover {
-  background: #DDFB6D;
-  color: #050808;
+  background: #000;
+  color: #fff;
 }
 
 .platform-tile:hover span,
-.platform-tile:hover p,
-.platform-tile:hover h2,
-.platform-tile:hover h3,
 .platform-tile:hover svg {
-  color: #050808;
+  color: #fff;
 }
 
 .launch-row::before {
@@ -928,5 +925,4 @@ select {
     line-height: 1.35;
   }
 }
-
 
