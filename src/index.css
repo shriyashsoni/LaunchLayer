@@ -249,6 +249,14 @@ a {
 }
 
 
+
+.work-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
 .event-card__summary {
   display: -webkit-box;
   overflow: hidden;
@@ -941,5 +949,4 @@ select {
     line-height: 1.35;
   }
 }
-
 

@@ -22,7 +22,7 @@ import {
 import { animate, motion, useInView } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type PageKey = "home" | "listings" | "launch" | "growth" | "plans" | "ecosystem" | "partners" | "events" | "blog" | "funding" | "community" | "brand" | "privacy" | "terms" | "admin" | "contact";
+type PageKey = "home" | "listings" | "launch" | "growth" | "plans" | "ecosystem" | "partners" | "events" | "work" | "blog" | "funding" | "community" | "brand" | "privacy" | "terms" | "admin" | "contact";
 
 type NavItem = {
   label: string;
@@ -64,6 +64,7 @@ const menuGroups = [
     links: [
       { label: "Partners", page: "partners" as const, desc: "Launchpads, media, security, analytics, exchanges" },
       { label: "Events", page: "events" as const, desc: "AMAs, pitch days, spaces, and demo days" },
+      { label: "Past Work", page: "work" as const, desc: "Previous launches, proof cards, and client results" },
       { label: "Funding", page: "funding" as const, desc: "Budget, grants, investor decks, and treasury notes" },
     ],
   },
@@ -390,7 +391,7 @@ function downloadPng(filename: string, svg: string) {
 }
 function getInitialPage(): PageKey {
   const hash = window.location.hash.replace("#", "");
-  if (["home", "listings", "launch", "growth", "plans", "ecosystem", "partners", "events", "blog", "funding", "community", "brand", "privacy", "terms", "admin", "contact"].includes(hash)) {
+  if (["home", "listings", "launch", "growth", "plans", "ecosystem", "partners", "events", "work", "blog", "funding", "community", "brand", "privacy", "terms", "admin", "contact"].includes(hash)) {
     return hash as PageKey;
   }
   return "home";
@@ -1021,6 +1022,75 @@ function PartnersPage({ setPage }: { setPage: (page: PageKey) => void }) {
   );
 }
 
+function PastWorkPage({ setPage }: { setPage: (page: PageKey) => void }) {
+  const workItems = useBackendContent("work", []);
+
+  return (
+    <PageShell title="Past work, launch proof, client campaigns, and previous token visibility." kicker="Past Work">
+      {workItems.length === 0 ? (
+        <div className="mt-14 rounded-3xl bg-white p-8 ring-1 ring-black/5 md:p-12">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-black/35">No published work yet</p>
+          <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-tight text-black md:text-5xl" style={{ letterSpacing: "-0.04em" }}>Add real client work from the admin portal to publish it here.</h2>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-black/55">Use the Past Work module to upload the project image, proof screenshot, result summary, link, impressions, clicks, leads, documents, and case-study details.</p>
+          <div className="mt-8"><ArrowButton onClick={() => setPage("admin")}>Open admin</ArrowButton></div>
+        </div>
+      ) : (
+        <div className="mt-14 grid gap-5 lg:grid-cols-2">
+          {workItems.map((item) => {
+            const href = item.href?.trim();
+            const metrics = [
+              ["Impressions", item.impressions],
+              ["Clicks", item.clicks],
+              ["Leads", item.leads],
+            ].filter(([, value]) => typeof value === "number" && Number(value) > 0);
+
+            const card = (
+              <>
+                {item.coverImageUrl && (
+                  <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-[#F5F5F5] ring-1 ring-black/5">
+                    <img src={item.coverImageUrl} alt={item.title} className="h-full w-full object-cover" />
+                  </div>
+                )}
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <span className="rounded-full bg-[#DDFB6D] px-4 py-2 text-sm font-semibold text-black">{item.tag || "Launch proof"}</span>
+                  <span className="rounded-full bg-[#F5F5F5] px-4 py-2 text-sm font-medium text-black/55">{item.meta || "Published work"}</span>
+                </div>
+                <h2 className="mt-7 text-4xl font-medium leading-tight text-black" style={{ letterSpacing: "-0.04em" }}>{item.title}</h2>
+                <p className="work-card__summary mt-4 text-base leading-7 text-black/60">{item.summary}</p>
+                {metrics.length > 0 && (
+                  <div className="mt-7 grid grid-cols-3 gap-2">
+                    {metrics.map(([label, value]) => (
+                      <div key={label as string} className="rounded-2xl bg-[#F5F5F5] p-4">
+                        <p className="text-2xl font-semibold text-black">{Number(value).toLocaleString()}</p>
+                        <p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-black/40">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-7 flex flex-wrap gap-3">
+                  {href && <span className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white">View proof <ArrowRight className="h-4 w-4" /></span>}
+                  {item.documentUrl && <a href={item.documentUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="rounded-full bg-[#F5F5F5] px-5 py-3 text-sm font-medium text-black ring-1 ring-black/10">Open document</a>}
+                </div>
+              </>
+            );
+
+            return (
+              <article key={item._id ?? item.title} onClick={() => href && window.open(href, "_blank", "noopener,noreferrer")} className={`work-card rounded-3xl bg-white p-5 ring-1 ring-black/5 transition md:p-7 ${href ? "cursor-pointer hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(0,0,0,0.1)]" : ""}`}>
+                {card}
+              </article>
+            );
+          })}
+        </div>
+      )}
+      <div className="mt-14 rounded-3xl bg-black p-8 text-white md:p-12">
+        <div className="grid gap-8 md:grid-cols-[1fr_0.7fr] md:items-center">
+          <h2 className="text-4xl font-medium leading-tight md:text-5xl" style={{ letterSpacing: "-0.03em" }}>Showcase launches with cover images, proof links, documents, and real campaign metrics.</h2>
+          <ArrowButton light onClick={() => setPage("admin")}>Add past work</ArrowButton>
+        </div>
+      </div>
+    </PageShell>
+  );
+}
 function EventsPage({ setPage }: { setPage: (page: PageKey) => void }) {
   const events = useBackendContent("event", fallbackEventItems);
 
@@ -1781,6 +1851,7 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
     [
       ["Partners", "partners"],
       ["Events", "events"],
+      ["Past Work", "work"],
       ["Community", "community"],
       ["Plans", "plans"],
       ["Contact Us", "contact"],
@@ -1789,6 +1860,7 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
       ["Blog", "blog"],
       ["Launch Guides", "blog"],
       ["Partner Network", "partners"],
+      ["Past Work", "work"],
       ["Book Launch", "contact"],
     ],
   ] as const;
@@ -1842,6 +1914,7 @@ export default function App() {
       ecosystem: "Ecosystem | LaunchLayer",
       partners: "Partners | LaunchLayer",
       events: "Events | LaunchLayer",
+      work: "Past Work | LaunchLayer",
       blog: "Blog | LaunchLayer",
       funding: "Funding | LaunchLayer",
       community: "Community | LaunchLayer",
@@ -1891,6 +1964,7 @@ export default function App() {
       {page === "ecosystem" && <EcosystemPage setPage={setPage} />}
       {page === "partners" && <PartnersPage setPage={setPage} />}
       {page === "events" && <EventsPage setPage={setPage} />}
+      {page === "work" && <PastWorkPage setPage={setPage} />}
       {page === "blog" && <BlogPage />}
       {page === "funding" && <FundingPage setPage={setPage} />}
       {page === "community" && <CommunityPage setPage={setPage} />}
@@ -1903,4 +1977,6 @@ export default function App() {
     </main>
   );
 }
+
+
 
