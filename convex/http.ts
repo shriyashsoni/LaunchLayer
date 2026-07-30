@@ -101,6 +101,64 @@ async function sendBookingEmail(body: Record<string, unknown>, id: string) {
   return true;
 }
 
+async function sendClientConfirmation(body: Record<string, unknown>, id: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || !isEmail(body.contact)) return false;
+
+  const from = process.env.LAUNCHLAYER_FROM_EMAIL || "LaunchLayer <onboarding@resend.dev>";
+  const replyTo = process.env.LAUNCHLAYER_COMPANY_EMAIL || process.env.LAUNCHLAYER_NOTIFY_EMAIL;
+  const html = `<!doctype html>
+  <html lang="en">
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <style>
+        @media only screen and (max-width:620px){.email-wrap{padding:12px!important}.email-card{padding:24px 20px!important;border-radius:20px!important}.email-title{font-size:30px!important}}
+      </style>
+    </head>
+    <body style="margin:0;padding:0;background:#f2f2f0;color:#090b0a;font-family:Inter,Arial,sans-serif">
+      <div style="display:none;max-height:0;overflow:hidden;opacity:0">We received your LaunchLayer query and will contact you shortly.</div>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f2f2f0">
+        <tr><td class="email-wrap" align="center" style="padding:32px 16px">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:680px">
+            <tr><td style="padding:0 4px 18px;font-size:22px;font-weight:800"><span style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;background:#090b0a;color:#ddfb6d;border-radius:7px;margin-right:9px">L</span>LaunchLayer</td></tr>
+            <tr><td class="email-card" style="background:#fff;border:1px solid #dededb;border-radius:28px;padding:36px">
+              <p style="margin:0 0 12px;color:#6b6b6b;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700">Query received</p>
+              <h1 class="email-title" style="margin:0 0 18px;font-size:42px;line-height:1.04">Your launch is now<br>on our desk.</h1>
+              <p style="margin:0;color:#61635f;font-size:17px;line-height:1.7">Hi ${escapeHtml(body.projectName)} team,</p>
+              <p style="margin:12px 0 0;color:#61635f;font-size:17px;line-height:1.7">Thanks for reaching out. We received your launch query and our team will review the project details. We will contact you directly with the next steps.</p>
+              <div style="margin:28px 0 0;padding:22px;border-radius:20px;background:#ddfb6d">
+                <p style="margin:0 0 7px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;color:#4f581d">Request reference</p>
+                <p style="margin:0;font-size:16px;font-weight:800">${escapeHtml(id)}</p>
+                <p style="margin:9px 0 0;font-size:14px;color:#464b30">Goal: ${escapeHtml(body.mainGoal)}</p>
+              </div>
+              <p style="margin:28px 0 0;font-size:16px;line-height:1.65">Launch well,<br><strong>LaunchLayer Team</strong></p>
+            </td></tr>
+            <tr><td style="padding:20px 6px 0;color:#777a76;font-size:12px;line-height:1.6">LaunchLayer · Independent token launch support<br>This message was sent because a launch query was submitted on our website.</td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </body>
+  </html>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from,
+      to: String(body.contact).trim(),
+      subject: "We received your LaunchLayer query",
+      html,
+      ...(replyTo ? { reply_to: replyTo } : {}),
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("Resend confirmation failed", response.status, await response.text());
+    return false;
+  }
+  return true;
+}
 http.route({
   path: "/content",
   method: "GET",
@@ -124,6 +182,9 @@ http.route({
         return json({ error: `${key} is required` }, { status: 400 });
       }
     }
+    if (!isEmail(body.contact)) {
+      return json({ error: "A valid email address is required" }, { status: 400 });
+    }
     const id = await ctx.runMutation(api.content.createBooking, {
       projectName: body.projectName,
       contact: body.contact,
@@ -133,12 +194,16 @@ http.route({
       source: "launchlayer-contact",
     });
     let emailSent = false;
+    let confirmationSent = false;
     try {
-      emailSent = await sendBookingEmail(body, String(id));
+      [emailSent, confirmationSent] = await Promise.all([
+        sendBookingEmail(body, String(id)),
+        sendClientConfirmation(body, String(id)),
+      ]);
     } catch (error) {
       console.error("Booking email error", error);
     }
-    return json({ ok: true, id, emailSent });
+    return json({ ok: true, id, emailSent, confirmationSent });
   }),
 });
 

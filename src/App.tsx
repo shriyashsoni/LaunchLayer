@@ -1506,6 +1506,7 @@ function ContactPage() {
     message: "",
   });
   const [bookingStatus, setBookingStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   const updateBooking = (field: keyof typeof booking, value: string) => {
     setBooking((current) => ({ ...current, [field]: value }));
@@ -1523,6 +1524,8 @@ function ContactPage() {
         body: JSON.stringify(booking),
       });
       if (!response.ok) throw new Error("Booking request failed");
+      const result = await response.json();
+      setConfirmationSent(Boolean(result.confirmationSent));
       setBooking({ projectName: "", contact: "", chainStatus: "", mainGoal: "", message: "" });
       setBookingStatus("success");
     } catch {
@@ -1562,7 +1565,7 @@ function ContactPage() {
         </div>
         <form className="grid content-start gap-4 rounded-2xl bg-white p-6 ring-1 ring-black/5" onSubmit={submitBooking}>
           <input required value={booking.projectName} onChange={(event) => updateBooking("projectName", event.target.value)} className="h-14 rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" placeholder="Project name" />
-          <input required value={booking.contact} onChange={(event) => updateBooking("contact", event.target.value)} className="h-14 rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" placeholder="Telegram or email" />
+          <input required type="email" autoComplete="email" value={booking.contact} onChange={(event) => updateBooking("contact", event.target.value)} className="h-14 rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" placeholder="Email address" />
           <input required value={booking.chainStatus} onChange={(event) => updateBooking("chainStatus", event.target.value)} className="h-14 rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" placeholder="Chain and contract status" />
           <select required className="h-14 rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" value={booking.mainGoal} onChange={(event) => updateBooking("mainGoal", event.target.value)}>
             <option value="" disabled>
@@ -1578,7 +1581,7 @@ function ContactPage() {
             {bookingStatus === "loading" ? "Sending launch map" : "Request launch map"}
             <ArrowRight className="h-5 w-5" />
           </button>
-          {bookingStatus === "success" && <p className="rounded-2xl bg-[#DDFB6D] px-5 py-4 text-sm font-medium text-black">Booking received. LaunchLayer can now review this from the backend.</p>}
+          {bookingStatus === "success" && <p className="rounded-2xl bg-[#DDFB6D] px-5 py-4 text-sm font-medium text-black">{confirmationSent ? "Query received. A confirmation email is now in your inbox and our team will contact you shortly." : "Query received. Our team will review it and contact you shortly."}</p>}
           {bookingStatus === "error" && <p className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700">Could not submit right now. Check the backend URL or Convex deployment.</p>}
         </form>
       </div>
