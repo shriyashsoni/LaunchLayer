@@ -1032,8 +1032,8 @@ function EventsPage({ setPage }: { setPage: (page: PageKey) => void }) {
           const cardContent = (
             <>
               {event.coverImageUrl && (
-                <div className="mb-6 aspect-[16/9] overflow-hidden rounded-2xl bg-[#F5F5F5] ring-1 ring-black/5">
-                  <img src={event.coverImageUrl} alt={event.title} className="h-full w-full object-cover" />
+                <div className="mb-6 aspect-[1.91/1] overflow-hidden rounded-2xl bg-black/5 ring-1 ring-black/5">
+                  <img src={event.coverImageUrl} alt={event.title} className="h-full w-full object-contain" />
                 </div>
               )}
               <div className="flex items-center justify-between gap-3">
