@@ -432,7 +432,7 @@ type BackendContentItem = {
   leads?: number;
 };
 
-const backendHttpUrl = (import.meta.env.VITE_CONVEX_HTTP_URL as string | undefined)?.replace(/\/$/, "");
+const backendHttpUrl = (import.meta.env.VITE_CONVEX_HTTP_URL as string | undefined)?.replace(/\/$/, "") || "https://lovely-buffalo-252.convex.site";
 
 const fallbackBlogItems: BackendContentItem[] = blogPosts.map((post) => ({
   type: "blog",
@@ -1512,6 +1512,7 @@ function ContactPage() {
   });
   const [bookingStatus, setBookingStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [confirmationSent, setConfirmationSent] = useState(false);
+  const [bookingError, setBookingError] = useState("");
 
   const updateBooking = (field: keyof typeof booking, value: string) => {
     setBooking((current) => ({ ...current, [field]: value }));
@@ -1520,6 +1521,7 @@ function ContactPage() {
   const submitBooking = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setBookingStatus("loading");
+    setBookingError("");
 
     try {
       if (!backendHttpUrl) throw new Error("Backend URL is not configured");
@@ -1528,12 +1530,13 @@ function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(booking),
       });
-      if (!response.ok) throw new Error("Booking request failed");
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(typeof result.error === "string" ? result.error : "Booking request failed");
       setConfirmationSent(Boolean(result.confirmationSent));
       setBooking({ projectName: "", contact: "", chainStatus: "", mainGoal: "", message: "" });
       setBookingStatus("success");
-    } catch {
+    } catch (error) {
+      setBookingError(error instanceof Error ? error.message : "Could not connect to the booking service");
       setBookingStatus("error");
     }
   };
@@ -1587,7 +1590,7 @@ function ContactPage() {
             <ArrowRight className="h-5 w-5" />
           </button>
           {bookingStatus === "success" && <p className="rounded-2xl bg-[#DDFB6D] px-5 py-4 text-sm font-medium text-black">{confirmationSent ? "Query submitted successfully. A confirmation email is in your inbox, and our team will respond within 48 hours." : "Query submitted successfully. Our team will review it and respond within 48 hours."}</p>}
-          {bookingStatus === "error" && <p className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700">Could not submit right now. Check the backend URL or Convex deployment.</p>}
+          {bookingStatus === "error" && <p className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700">{bookingError || "Could not submit right now. Please check your details and try again."}</p>}
         </form>
       </div>
     </PageShell>
