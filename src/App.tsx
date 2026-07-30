@@ -37,7 +37,7 @@ type SeoMeta = {
   robots?: string;
 };
 
-const publicContactEmail = "sonishriyash@gmail.com";
+const publicContactEmail = "hello@launchlayer.solutions";
 const bookingUrl = "https://calendly.com/l65918389/30min";
 const socialLinks = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/launchlayersolutions/?viewAsMember=true" },
@@ -1595,9 +1595,9 @@ function ContactPage() {
 }
 function AdminPage() {
   const editorRef = useRef<HTMLDivElement>(null);
-  const [login, setLogin] = useState({ email: "sonishriyash@gmail.com", password: "" });
+  const [login, setLogin] = useState({ email: "", password: "" });
   const [adminToken, setAdminToken] = useState(() => window.sessionStorage.getItem("launchlayer-admin-token") ?? "");
-  const [adminEmail, setAdminEmail] = useState(() => window.sessionStorage.getItem("launchlayer-admin-email") ?? "sonishriyash@gmail.com");
+  const [adminEmail, setAdminEmail] = useState(() => window.sessionStorage.getItem("launchlayer-admin-email") ?? "");
   const [loginStatus, setLoginStatus] = useState<"idle" | "loading" | "error">("idle");
   const [postStatus, setPostStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [uploadStatus, setUploadStatus] = useState("");
@@ -1851,7 +1851,7 @@ function AdminPage() {
             </div>
           </div>
           <form onSubmit={loginAdmin} className="rounded-3xl bg-white p-7 ring-1 ring-black/5">
-            <p className="text-sm font-medium text-black/50">Only sonishriyash@gmail.com can access this portal.</p>
+            <p className="text-sm font-medium text-black/50">Authorized LaunchLayer administrators only.</p>
             <input value={login.email} onChange={(event) => setLogin((current) => ({ ...current, email: event.target.value }))} className="mt-6 h-14 w-full rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" placeholder="Admin email" />
             <input type="password" value={login.password} onChange={(event) => setLogin((current) => ({ ...current, password: event.target.value }))} className="mt-4 h-14 w-full rounded-full bg-[#F5F5F5] px-5 text-base font-medium text-black outline-none" placeholder="Admin password" />
             <button className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-black px-7 py-4 text-base font-medium text-white">{loginStatus === "loading" ? "Checking access" : "Login"}</button>
