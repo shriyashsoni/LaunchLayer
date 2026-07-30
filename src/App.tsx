@@ -37,6 +37,13 @@ type SeoMeta = {
   robots?: string;
 };
 
+const publicContactEmail = "sonishriyash@gmail.com";
+const socialLinks = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/launchlayersolutions/?viewAsMember=true" },
+  { label: "X", href: "https://x.com/LaunchLayer_" },
+  { label: "Email", href: `mailto:${publicContactEmail}` },
+] as const;
+
 const seoPages: Record<PageKey, SeoMeta> = {
   home: {
     title: "LaunchLayer | Token Launch Infrastructure",
@@ -1452,7 +1459,7 @@ function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
         ["Project materials", "Token documents, decks, logos, screenshots, contract links, launch dates, and campaign notes are used only to provide requested launch support unless you approve public use."],
         ["Sharing with partners", "When needed, we may share relevant project information with listing platforms, launchpads, media partners, auditors, KYC vendors, market makers, event partners, or exchange contacts for requested work."],
         ["Retention and security", "We keep working records for operational continuity and use reasonable safeguards to protect project information. No internet service can guarantee absolute security."],
-        ["Your choices", "You can ask us to update, correct, or delete submitted contact details and non-essential project materials by contacting LaunchLayer."],
+        ["Your choices", `You can ask us to update, correct, or delete submitted contact details and non-essential project materials by contacting LaunchLayer at ${publicContactEmail}.`],
       ]
     : [
         ["Independent support", "LaunchLayer is an independent launch support company. We prepare strategy, assets, submissions, outreach, events, community systems, and funding materials."],
@@ -1485,7 +1492,7 @@ function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
         </div>
       </div>
       <div className="mt-8 rounded-2xl bg-white p-6 text-sm leading-7 text-black/55 ring-1 ring-black/5">
-        Last updated: July 30, 2026. For questions, use the contact page and include your project name when relevant.
+        Last updated: July 30, 2026. For questions, email us at {publicContactEmail} or use the contact page and include your project name when relevant.
       </div>
     </PageShell>
   );
@@ -1533,6 +1540,9 @@ function ContactPage() {
           <p className="mt-6 max-w-xl text-white/65">
             Send the chain, contract status, target platforms, launch date, budget range, and socials. We turn it into a practical listing and growth plan.
           </p>
+          <a href={`mailto:${publicContactEmail}`} className="mt-7 inline-flex rounded-full bg-white/10 px-5 py-3 text-sm font-medium text-white ring-1 ring-white/10">
+            {publicContactEmail}
+          </a>
           <div className="mt-12 grid gap-4 sm:grid-cols-2">
             {[
               [CircleDollarSign, "Budget route"],
@@ -2071,6 +2081,13 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
             <span>LaunchLayer</span>
           </button>
         </div>
+        <div className="site-footer__socials" aria-label="LaunchLayer social links">
+          {socialLinks.map((link) => (
+            <a key={link.label} href={link.href} target={link.href.startsWith("mailto:") ? undefined : "_blank"} rel={link.href.startsWith("mailto:") ? undefined : "noreferrer"}>
+              {link.label}
+            </a>
+          ))}
+        </div>
         <div className="site-footer__legal">
           <p>© 2026 LaunchLayer. All rights reserved.</p>
           <button onClick={() => setPage("privacy")}>Privacy Policy</button>
@@ -2153,11 +2170,4 @@ export default function App() {
     </main>
   );
 }
-
-
-
-
-
-
-
 

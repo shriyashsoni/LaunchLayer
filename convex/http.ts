@@ -38,6 +38,69 @@ function parseType(type: string | null): ContentType | null {
   return (contentTypes as readonly string[]).includes(type) ? (type as ContentType) : null;
 }
 
+
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function isEmail(value: unknown) {
+  return typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+async function sendBookingEmail(body: Record<string, unknown>, id: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.LAUNCHLAYER_NOTIFY_EMAIL || process.env.LAUNCHLAYER_ADMIN_EMAIL;
+  if (!apiKey || !to) return false;
+
+  const from = process.env.LAUNCHLAYER_FROM_EMAIL || "LaunchLayer <onboarding@resend.dev>";
+  const submittedAt = new Date().toISOString();
+  const subject = `New LaunchLayer query: ${String(body.projectName ?? "Token launch")}`;
+  const html = `
+    <div style="font-family:Inter,Arial,sans-serif;max-width:680px;margin:0 auto;background:#f5f5f5;padding:28px;color:#050808">
+      <div style="background:#ffffff;border-radius:24px;padding:28px;border:1px solid #e7e7e7">
+        <p style="margin:0 0 12px;color:#6b6b6b;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700">LaunchLayer lead</p>
+        <h1 style="margin:0 0 20px;font-size:32px;line-height:1.05">${escapeHtml(body.projectName)}</h1>
+        <table style="width:100%;border-collapse:collapse;font-size:15px;line-height:1.6">
+          <tr><td style="padding:10px 0;color:#777;width:170px">Contact</td><td style="padding:10px 0;font-weight:700">${escapeHtml(body.contact)}</td></tr>
+          <tr><td style="padding:10px 0;color:#777">Chain/status</td><td style="padding:10px 0">${escapeHtml(body.chainStatus)}</td></tr>
+          <tr><td style="padding:10px 0;color:#777">Main goal</td><td style="padding:10px 0">${escapeHtml(body.mainGoal)}</td></tr>
+          <tr><td style="padding:10px 0;color:#777">Booking ID</td><td style="padding:10px 0">${escapeHtml(id)}</td></tr>
+          <tr><td style="padding:10px 0;color:#777">Submitted</td><td style="padding:10px 0">${escapeHtml(submittedAt)}</td></tr>
+        </table>
+        <div style="margin-top:22px;border-radius:18px;background:#ddfb6d;padding:20px">
+          <p style="margin:0 0 8px;font-weight:800">Message</p>
+          <p style="margin:0;white-space:pre-wrap;line-height:1.65">${escapeHtml(body.message)}</p>
+        </div>
+      </div>
+    </div>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to,
+      subject,
+      html,
+      ...(isEmail(body.contact) ? { reply_to: String(body.contact).trim() } : {}),
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("Resend email failed", response.status, await response.text());
+    return false;
+  }
+  return true;
+}
+
 http.route({
   path: "/content",
   method: "GET",
@@ -69,7 +132,13 @@ http.route({
       message: body.message,
       source: "launchlayer-contact",
     });
-    return json({ ok: true, id });
+    let emailSent = false;
+    try {
+      emailSent = await sendBookingEmail(body, String(id));
+    } catch (error) {
+      console.error("Booking email error", error);
+    }
+    return json({ ok: true, id, emailSent });
   }),
 });
 
@@ -157,3 +226,4 @@ for (const path of ["/content", "/booking", "/admin/login", "/admin/upload-url",
 }
 
 export default http;
+

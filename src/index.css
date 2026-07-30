@@ -577,6 +577,32 @@ a {
   white-space: nowrap;
 }
 
+.site-footer__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(18px, 2vw, 34px);
+}
+
+.site-footer__socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 999px;
+  background: #DDFB6D;
+  color: #050808;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 760;
+  text-decoration: none;
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.site-footer__socials a:hover {
+  transform: translateY(-2px);
+  background: #c8ef48;
+}
 .site-footer__legal {
   display: flex;
   flex-wrap: wrap;
