@@ -38,6 +38,7 @@ type SeoMeta = {
 };
 
 const publicContactEmail = "sonishriyash@gmail.com";
+const bookingUrl = "https://calendly.com/l65918389/30min";
 const socialLinks = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/launchlayersolutions/?viewAsMember=true" },
   { label: "X", href: "https://x.com/LaunchLayer_" },
@@ -689,9 +690,9 @@ function Navbar({ page, setPage }: { page: PageKey; setPage: (page: PageKey) => 
           )}
         </div>
 
-        <button onClick={() => go("contact")} className="hidden rounded-full bg-black px-7 py-2.5 text-base font-medium text-white transition-colors duration-200 hover:bg-gray-800 md:inline-flex">
+        <a href={bookingUrl} target="_blank" rel="noreferrer" className="hidden rounded-full bg-black px-7 py-2.5 text-base font-medium text-white transition-colors duration-200 hover:bg-gray-800 md:inline-flex">
           Book Launch
-        </button>
+        </a>
 
         <button className="grid h-11 w-11 place-items-center rounded-full bg-white/70 text-black md:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
           <Menu className="h-5 w-5" />
@@ -746,6 +747,10 @@ function Navbar({ page, setPage }: { page: PageKey; setPage: (page: PageKey) => 
                   );
                 })}
               </div>
+              <a href={bookingUrl} target="_blank" rel="noreferrer" className="mt-3 flex w-full items-center justify-between rounded-2xl bg-black px-5 py-4 text-base font-medium text-white" onClick={() => setOpen(false)}>
+                Book Launch
+                <ArrowRight className="h-4 w-4" />
+              </a>
             </div>
           </div>
         </div>
@@ -2070,7 +2075,11 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
           {linkGroups.map((group, index) => (
             <nav key={index} className="site-footer__nav" aria-label={`Footer links ${index + 1}`}>
               <p className="site-footer__nav-title">{footerLabels[index]}</p>
-              {group.map(([label, target]) => (
+              {group.map(([label, target]) => label === "Book Launch" ? (
+                <a key={label} href={bookingUrl} target="_blank" rel="noreferrer">
+                  {label}
+                </a>
+              ) : (
                 <button key={label} onClick={() => setPage(target)}>
                   {label}
                 </button>
