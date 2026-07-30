@@ -353,7 +353,7 @@ function buildLogoSvg(asset: (typeof brandAssets)[number]) {
   }
 
   if (asset.mode === "badge") {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520"><rect width="900" height="520" rx="56" fill="${asset.bg}"/><circle cx="742" cy="120" r="210" fill="${asset.accent}" opacity="0.42"/><path d="${logoPath}" fill="${asset.fg}" transform="translate(70 106) scale(1.18)"/><text x="390" y="232" fill="${asset.fg}" font-family="Inter, Arial, sans-serif" font-size="86" font-weight="850" letter-spacing="-7">LaunchLayer</text><text x="394" y="286" fill="${asset.fg}" opacity="0.62" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">LISTING NETWORK / MARKET ENTRY</text></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-label="LaunchLayer ${asset.name}"><rect width="900" height="520" rx="64" fill="${asset.bg}"/><circle cx="748" cy="116" r="198" fill="${asset.accent}" opacity="0.34"/><circle cx="166" cy="414" r="118" fill="${asset.accent}" opacity="0.18"/><rect x="76" y="108" width="304" height="304" rx="72" fill="${asset.fg}" opacity="0.10"/><path d="${logoPath}" fill="${asset.fg}" transform="translate(112 144) scale(0.92)"/><text x="430" y="244" fill="${asset.fg}" font-family="Inter, Arial, Helvetica, sans-serif" font-size="72" font-weight="850">LaunchLayer</text><text x="434" y="296" fill="${asset.fg}" opacity="0.66" font-family="Inter, Arial, Helvetica, sans-serif" font-size="21" font-weight="750" letter-spacing="2.4">CAMPAIGN MARK</text></svg>`;
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="360" viewBox="0 0 1100 360"><rect width="1100" height="360" rx="44" fill="${asset.bg}"/><circle cx="160" cy="180" r="122" fill="${asset.accent}" opacity="0.42"/>${mark}${word}${sub}</svg>`;
@@ -1887,4 +1887,5 @@ export default function App() {
     </main>
   );
 }
+
 
