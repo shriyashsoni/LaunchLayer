@@ -1028,11 +1028,36 @@ function PastWorkPage({ setPage }: { setPage: (page: PageKey) => void }) {
   return (
     <PageShell title="Past work, launch proof, client campaigns, and previous token visibility." kicker="Past Work">
       {workItems.length === 0 ? (
-        <div className="mt-14 rounded-3xl bg-white p-8 ring-1 ring-black/5 md:p-12">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-black/35">No published work yet</p>
-          <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-tight text-black md:text-5xl" style={{ letterSpacing: "-0.04em" }}>Add real client work from the admin portal to publish it here.</h2>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-black/55">Use the Past Work module to upload the project image, proof screenshot, result summary, link, impressions, clicks, leads, documents, and case-study details.</p>
-          <div className="mt-8"><ArrowButton onClick={() => setPage("admin")}>Open admin</ArrowButton></div>
+        <div className="mt-14 overflow-hidden rounded-3xl bg-white ring-1 ring-black/5">
+          <div className="grid gap-0 lg:grid-cols-[1fr_0.86fr]">
+            <div className="p-8 md:p-12">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-black/35">Proof library</p>
+              <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-tight text-black md:text-6xl" style={{ letterSpacing: "-0.05em" }}>Verified launch work is being curated.</h2>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-black/55">Selected launch proof, campaign visuals, result notes, and public case materials will appear here once they are approved for display.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <button onClick={() => setPage("contact")} className="inline-flex items-center gap-3 rounded-full bg-black px-6 py-3 text-sm font-medium text-white">Book new launch <ArrowRight className="h-4 w-4" /></button>
+              </div>
+            </div>
+            <div className="relative min-h-[360px] bg-[#DDFB6D] p-7">
+              <div className="absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-white/35" />
+              <div className="absolute bottom-[-70px] left-[-60px] h-52 w-52 rounded-full bg-black/5" />
+              <div className="relative grid h-full content-between gap-5">
+                <div className="rounded-3xl bg-white/82 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.08)] backdrop-blur">
+                  <div className="aspect-[16/9] rounded-2xl bg-black/10" />
+                  <div className="mt-5 h-4 w-28 rounded-full bg-black/18" />
+                  <div className="mt-3 h-8 w-56 rounded-full bg-black/85" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {["Proof", "Links", "Metrics"].map((label) => (
+                    <div key={label} className="rounded-2xl bg-black p-4 text-white">
+                      <p className="text-2xl font-semibold">00</p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/45">{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="mt-14 grid gap-5 lg:grid-cols-2">
@@ -1977,6 +2002,8 @@ export default function App() {
     </main>
   );
 }
+
+
 
 
 
