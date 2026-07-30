@@ -1586,7 +1586,7 @@ function ContactPage() {
             {bookingStatus === "loading" ? "Sending launch map" : "Request launch map"}
             <ArrowRight className="h-5 w-5" />
           </button>
-          {bookingStatus === "success" && <p className="rounded-2xl bg-[#DDFB6D] px-5 py-4 text-sm font-medium text-black">{confirmationSent ? "Query received. A confirmation email is now in your inbox and our team will contact you shortly." : "Query received. Our team will review it and contact you shortly."}</p>}
+          {bookingStatus === "success" && <p className="rounded-2xl bg-[#DDFB6D] px-5 py-4 text-sm font-medium text-black">{confirmationSent ? "Query submitted successfully. A confirmation email is in your inbox, and our team will respond within 48 hours." : "Query submitted successfully. Our team will review it and respond within 48 hours."}</p>}
           {bookingStatus === "error" && <p className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700">Could not submit right now. Check the backend URL or Convex deployment.</p>}
         </form>
       </div>

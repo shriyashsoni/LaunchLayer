@@ -57,7 +57,7 @@ async function sendBookingEmail(body: Record<string, unknown>, id: string) {
   const to = process.env.LAUNCHLAYER_NOTIFY_EMAIL || process.env.LAUNCHLAYER_ADMIN_EMAIL;
   if (!apiKey || !to) return false;
 
-  const from = process.env.LAUNCHLAYER_FROM_EMAIL || "LaunchLayer <onboarding@resend.dev>";
+  const from = process.env.LAUNCHLAYER_FROM_EMAIL || "LaunchLayer <hello@launchlayer.solutions>";
   const submittedAt = new Date().toISOString();
   const subject = `New LaunchLayer query: ${String(body.projectName ?? "Token launch")}`;
   const html = `
@@ -105,7 +105,7 @@ async function sendClientConfirmation(body: Record<string, unknown>, id: string)
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey || !isEmail(body.contact)) return false;
 
-  const from = process.env.LAUNCHLAYER_FROM_EMAIL || "LaunchLayer <onboarding@resend.dev>";
+  const from = process.env.LAUNCHLAYER_FROM_EMAIL || "LaunchLayer <hello@launchlayer.solutions>";
   const replyTo = process.env.LAUNCHLAYER_COMPANY_EMAIL || process.env.LAUNCHLAYER_NOTIFY_EMAIL;
   const html = `<!doctype html>
   <html lang="en">
@@ -117,7 +117,7 @@ async function sendClientConfirmation(body: Record<string, unknown>, id: string)
       </style>
     </head>
     <body style="margin:0;padding:0;background:#f2f2f0;color:#090b0a;font-family:Inter,Arial,sans-serif">
-      <div style="display:none;max-height:0;overflow:hidden;opacity:0">We received your LaunchLayer query and will contact you shortly.</div>
+      <div style="display:none;max-height:0;overflow:hidden;opacity:0">Your query was submitted successfully. Our team will respond within 48 hours.</div>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f2f2f0">
         <tr><td class="email-wrap" align="center" style="padding:32px 16px">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:680px">
@@ -126,13 +126,13 @@ async function sendClientConfirmation(body: Record<string, unknown>, id: string)
               <p style="margin:0 0 12px;color:#6b6b6b;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700">Query received</p>
               <h1 class="email-title" style="margin:0 0 18px;font-size:42px;line-height:1.04">Your launch is now<br>on our desk.</h1>
               <p style="margin:0;color:#61635f;font-size:17px;line-height:1.7">Hi ${escapeHtml(body.projectName)} team,</p>
-              <p style="margin:12px 0 0;color:#61635f;font-size:17px;line-height:1.7">Thanks for reaching out. We received your launch query and our team will review the project details. We will contact you directly with the next steps.</p>
+              <p style="margin:12px 0 0;color:#61635f;font-size:17px;line-height:1.7">Thanks for reaching out. Your query was submitted successfully and is now with our launch team. Please allow up to 48 hours for us to review your project details and respond with the next steps.</p>
               <div style="margin:28px 0 0;padding:22px;border-radius:20px;background:#ddfb6d">
                 <p style="margin:0 0 7px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;color:#4f581d">Request reference</p>
                 <p style="margin:0;font-size:16px;font-weight:800">${escapeHtml(id)}</p>
                 <p style="margin:9px 0 0;font-size:14px;color:#464b30">Goal: ${escapeHtml(body.mainGoal)}</p>
               </div>
-              <p style="margin:28px 0 0;font-size:16px;line-height:1.65">Launch well,<br><strong>LaunchLayer Team</strong></p>
+              <div style="margin:18px 0 0;padding:16px 18px;border:1px solid #dededb;border-radius:16px"><p style="margin:0;font-size:14px;color:#61635f;line-height:1.6"><strong style="color:#090b0a">What happens next?</strong><br>Our team will review your launch goals and reply to this email within 48 hours.</p></div><p style="margin:28px 0 0;font-size:16px;line-height:1.65">Launch well,<br><strong>LaunchLayer Team</strong></p>
             </td></tr>
             <tr><td style="padding:20px 6px 0;color:#777a76;font-size:12px;line-height:1.6">LaunchLayer · Independent token launch support<br>This message was sent because a launch query was submitted on our website.</td></tr>
           </table>
@@ -147,7 +147,7 @@ async function sendClientConfirmation(body: Record<string, unknown>, id: string)
     body: JSON.stringify({
       from,
       to: String(body.contact).trim(),
-      subject: "We received your LaunchLayer query",
+      subject: "Your query was submitted successfully | LaunchLayer",
       html,
       ...(replyTo ? { reply_to: replyTo } : {}),
     }),
