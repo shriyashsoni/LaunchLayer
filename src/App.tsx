@@ -22,7 +22,9 @@ import {
 import { animate, motion, useInView } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type PageKey = "home" | "listings" | "launch" | "growth" | "plans" | "ecosystem" | "partners" | "events" | "work" | "blog" | "funding" | "community" | "brand" | "privacy" | "terms" | "admin" | "contact";
+import { MarketPage, CoinDetailPage, ExchangesPage, CategoriesPage, WatchlistPage } from "./CryptoPages";
+
+type PageKey = "home" | "listings" | "launch" | "growth" | "plans" | "ecosystem" | "partners" | "events" | "work" | "blog" | "funding" | "community" | "brand" | "privacy" | "terms" | "admin" | "contact" | "market" | "coin" | "exchanges" | "categories" | "watchlist";
 
 type NavItem = {
   label: string;
@@ -149,6 +151,36 @@ const seoPages: Record<PageKey, SeoMeta> = {
     image: "/og-contact.png",
     keywords: "book token launch, token launch agency contact, crypto listing support contact, meme coin launch agency",
   },
+  market: {
+    title: "Crypto Market Data | LaunchLayer",
+    description: "Live cryptocurrency prices, market caps, 24h volume and trading charts.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "crypto prices, cryptocurrency market cap, live crypto data",
+  },
+  coin: {
+    title: "Token Details | LaunchLayer",
+    description: "View live token details, charts, volume, and supply metrics.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "token price, live crypto chart",
+  },
+  exchanges: {
+    title: "Top Crypto Exchanges | LaunchLayer",
+    description: "Ranked crypto exchanges by volume and trust.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "crypto exchanges, top crypto exchanges, binance, coinbase",
+  },
+  categories: {
+    title: "Top Crypto Categories | LaunchLayer",
+    description: "Top cryptocurrency categories by market cap.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "crypto categories, defi, memes, l2",
+  },
+  watchlist: {
+    title: "My Portfolio | LaunchLayer",
+    description: "Track your favorite cryptocurrencies.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "crypto portfolio, crypto watchlist",
+  },
 };
 
 function setMetaTag(attribute: "name" | "property", key: string, content: string) {
@@ -229,6 +261,16 @@ const menuGroups = [
       { label: "Events", page: "events" as const, desc: "AMAs, pitch days, spaces, and demo days" },
       { label: "Past Work", page: "work" as const, desc: "Previous launches, proof cards, and client results" },
       { label: "Funding", page: "funding" as const, desc: "Budget, grants, investor decks, and treasury notes" },
+    ],
+  },
+  {
+    label: "Data",
+    summary: "Crypto market intelligence",
+    links: [
+      { label: "Market", page: "market" as const, desc: "Live cryptocurrency prices and charts" },
+      { label: "Exchanges", page: "exchanges" as const, desc: "Top cryptocurrency exchanges" },
+      { label: "Categories", page: "categories" as const, desc: "Top crypto categories" },
+      { label: "Portfolio", page: "watchlist" as const, desc: "Track your crypto portfolio" },
     ],
   },
   {
@@ -554,10 +596,11 @@ function downloadPng(filename: string, svg: string) {
 }
 function getInitialPage(): PageKey {
   const hash = window.location.hash.replace("#", "");
-  if (["home", "listings", "launch", "growth", "plans", "ecosystem", "partners", "events", "work", "blog", "funding", "community", "brand", "privacy", "terms", "admin", "contact"].includes(hash)) {
+  if (hash.startsWith("coin/")) return "coin";
+  if (["home", "listings", "launch", "growth", "plans", "ecosystem", "partners", "events", "work", "blog", "funding", "community", "brand", "privacy", "terms", "admin", "contact", "market", "exchanges", "categories", "watchlist"].includes(hash)) {
     return hash as PageKey;
   }
-  return "home";
+  return "market";
 }
 
 function LogoIcon({ className = "h-7 w-7" }: { className?: string }) {
@@ -2114,15 +2157,31 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
   );
 }
 export default function App() {
-  const [page, setPageState] = useState<PageKey>(getInitialPage);
+  const [page, setPageState] = useState<PageKey>(() => {
+    const init = getInitialPage();
+    return init === "home" ? "market" : init;
+  });
+  const [coinId, setCoinId] = useState<string>("");
 
-  const pageMeta = useMemo(() => seoPages[page], [page]);
+  const pageMeta = useMemo(() => seoPages[page] || seoPages["home"], [page]);
 
   const setPage = (target: PageKey) => {
     setPageState(target);
     window.history.pushState(null, "", `#${target}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash.startsWith("coin/")) {
+        setCoinId(hash.split("/")[1]);
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
 
   useEffect(() => {
     const url = `${window.location.origin}${window.location.pathname}#${page}`;
@@ -2181,6 +2240,11 @@ export default function App() {
       {page === "terms" && <LegalPage kind="terms" />}
       {page === "admin" && <AdminPage />}
       {page === "contact" && <ContactPage />}
+      {page === "market" && <MarketPage setPage={setPage} />}
+      {page === "coin" && <CoinDetailPage coinId={coinId} />}
+      {page === "exchanges" && <ExchangesPage />}
+      {page === "categories" && <CategoriesPage />}
+      {page === "watchlist" && <WatchlistPage setPage={setPage} />}
       <Footer setPage={setPage} />
     </main>
   );

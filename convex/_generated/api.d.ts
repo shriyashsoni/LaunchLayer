@@ -9,6 +9,10 @@
  */
 
 import type * as content from "../content.js";
+import type * as crons from "../crons.js";
+import type * as crypto from "../crypto.js";
+import type * as cryptoAuth from "../cryptoAuth.js";
+import type * as cryptoIngestion from "../cryptoIngestion.js";
 import type * as http from "../http.js";
 
 import type {
@@ -19,6 +23,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   content: typeof content;
+  crons: typeof crons;
+  crypto: typeof crypto;
+  cryptoAuth: typeof cryptoAuth;
+  cryptoIngestion: typeof cryptoIngestion;
   http: typeof http;
 }>;
 

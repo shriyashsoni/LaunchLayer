@@ -290,5 +290,35 @@ for (const path of ["/content", "/booking", "/admin/login", "/admin/upload-url",
   });
 }
 
+
+// ── Public Developer API ───────────────────────────────────────
+async function validateApiKey(ctx: any, request: Request) {
+  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+  if (!token) return { valid: false, error: 'Missing API key' };
+  
+  const apiKeyRecord = await ctx.runQuery(api.crypto.validateApiKey, { key: token });
+  if (!apiKeyRecord) return { valid: false, error: 'Invalid API key' };
+  
+  return { valid: true, tier: apiKeyRecord.tier };
+}
+
+http.route({
+  path: '/v1/coins',
+  method: 'GET',
+  handler: httpAction(async (ctx, request) => {
+    const auth = await validateApiKey(ctx, request);
+    if (!auth.valid) return json({ error: auth.error }, { status: 401 });
+    
+    const coins = await ctx.runQuery(api.crypto.listCoins, { page: 1, perPage: 100 });
+    return json({ success: true, tier: auth.tier, data: coins.items });
+  }),
+});
+
+http.route({
+  path: '/v1/coins',
+  method: 'OPTIONS',
+  handler: httpAction(async () => new Response(null, { status: 204, headers: corsHeaders })),
+});
+
 export default http;
 
