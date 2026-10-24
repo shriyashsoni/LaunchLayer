@@ -1,16 +1,22 @@
 import {
   ArrowRight,
+  ArrowUpRight,
+  ArrowDownRight,
   BadgeCheck,
   BarChart3,
   Check,
   CircleDollarSign,
   ClipboardCheck,
+  Flame,
   Globe2,
   Handshake,
+  Layers,
   LineChart,
+  Lock,
   Megaphone,
   Menu,
   Rocket,
+  Search,
   SearchCheck,
   ShieldCheck,
   Sparkles,
@@ -18,13 +24,15 @@ import {
   TrendingUp,
   Users,
   X,
+  Zap,
 } from "lucide-react";
 import { animate, motion, useInView } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MarketPage, CoinDetailPage, ExchangesPage, CategoriesPage, WatchlistPage } from "./CryptoPages";
+import { TokenIntelPage } from "./TokenIntelComponents";
 
-type PageKey = "home" | "listings" | "launch" | "growth" | "plans" | "ecosystem" | "partners" | "events" | "work" | "blog" | "funding" | "community" | "brand" | "privacy" | "terms" | "admin" | "contact" | "market" | "coin" | "exchanges" | "categories" | "watchlist";
+type PageKey = "home" | "listings" | "launch" | "growth" | "plans" | "ecosystem" | "partners" | "events" | "work" | "blog" | "funding" | "community" | "brand" | "privacy" | "terms" | "admin" | "contact" | "market" | "coin" | "exchanges" | "categories" | "watchlist" | "intel" | "compare" | "booster";
 
 type NavItem = {
   label: string;
@@ -181,6 +189,24 @@ const seoPages: Record<PageKey, SeoMeta> = {
     image: "/og-launchlayer-v2.png",
     keywords: "crypto portfolio, crypto watchlist",
   },
+  intel: {
+    title: "Token Intelligence & Deep Search | LaunchLayer",
+    description: "Search any token across Solana, Base, Ethereum and BSC. View order flow, liquidity health, security audits, and live charts.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "token search, dex token data, live token intel, dexscreener data, crypto token audit",
+  },
+  compare: {
+    title: "Token Comparison (A vs B) | LaunchLayer",
+    description: "Compare any two tokens side-by-side with market cap multiplier calculator and liquidity metrics.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "compare crypto tokens, market cap calculator, token vs token, crypto comparison",
+  },
+  booster: {
+    title: "Token Volume Booster & Growth Playbook | LaunchLayer",
+    description: "Step-by-step strategies to 10x token trading volume, trend on DEX trackers, and qualify for CEX listings.",
+    image: "/og-launchlayer-v2.png",
+    keywords: "increase token volume, dexscreener trending, crypto market making, token volume booster, token growth agency",
+  },
 };
 
 function setMetaTag(attribute: "name" | "property", key: string, content: string) {
@@ -267,6 +293,9 @@ const menuGroups = [
     label: "Data",
     summary: "Crypto market intelligence",
     links: [
+      { label: "Token Intel & Search", page: "intel" as const, desc: "Search any token, order flow & security" },
+      { label: "Compare Tokens", page: "compare" as const, desc: "Head-to-head comparison & cap multiplier" },
+      { label: "Volume Booster", page: "booster" as const, desc: "10x volume strategies, diagnostic & playbook" },
       { label: "Market", page: "market" as const, desc: "Live cryptocurrency prices and charts" },
       { label: "Exchanges", page: "exchanges" as const, desc: "Top cryptocurrency exchanges" },
       { label: "Categories", page: "categories" as const, desc: "Top crypto categories" },
@@ -597,10 +626,10 @@ function downloadPng(filename: string, svg: string) {
 function getInitialPage(): PageKey {
   const hash = window.location.hash.replace("#", "");
   if (hash.startsWith("coin/")) return "coin";
-  if (["home", "listings", "launch", "growth", "plans", "ecosystem", "partners", "events", "work", "blog", "funding", "community", "brand", "privacy", "terms", "admin", "contact", "market", "exchanges", "categories", "watchlist"].includes(hash)) {
+  if (["home", "listings", "launch", "growth", "plans", "ecosystem", "partners", "events", "work", "blog", "funding", "community", "brand", "privacy", "terms", "admin", "contact", "market", "exchanges", "categories", "watchlist", "intel", "compare", "booster"].includes(hash)) {
     return hash as PageKey;
   }
-  return "market";
+  return "home";
 }
 
 function LogoIcon({ className = "h-7 w-7" }: { className?: string }) {
@@ -803,26 +832,86 @@ function Navbar({ page, setPage }: { page: PageKey; setPage: (page: PageKey) => 
 }
 
 function HeroSection({ setPage }: { setPage: (page: PageKey) => void }) {
+  const [searchVal, setSearchVal] = useState("");
+
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchVal.trim()) return;
+    const clean = searchVal.trim().toLowerCase();
+    if (["btc", "eth", "sol", "pepe", "bonk", "doge"].includes(clean)) {
+      window.location.hash = `#coin/${clean === "btc" ? "bitcoin" : clean === "eth" ? "ethereum" : clean === "sol" ? "solana" : clean === "doge" ? "dogecoin" : clean}`;
+      setPage("coin");
+    } else {
+      window.location.hash = `#intel`;
+      setPage("intel");
+    }
+  };
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#F5F5F5]">
       <section className="flex flex-1 items-end px-6 pb-6 pt-20">
         <div className="hero-card relative h-[calc(100vh-96px)] w-full overflow-hidden rounded-2xl">
           <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" src={heroVideo} />
           <div className="absolute inset-0 bg-white/18" />
-          <div className="relative z-10 flex h-full flex-col items-start justify-start p-7 pb-28 pt-28 sm:p-12 sm:pb-32 sm:pt-36">
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-black backdrop-blur">
+          <div className="relative z-10 flex h-full flex-col items-start justify-start p-7 pb-28 pt-24 sm:p-12 sm:pb-32 sm:pt-28">
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-black backdrop-blur">
               <Sparkles className="h-4 w-4" />
-              Token listing agency for serious launches
+              Live Token Intelligence &amp; Launch Infrastructure
             </span>
-            <h1 className="mb-4 max-w-3xl text-5xl font-medium leading-tight text-black md:text-7xl" style={{ letterSpacing: "-0.04em" }}>
-              Your Token
+            <h1 className="mb-3 max-w-3xl text-4xl sm:text-5xl font-medium leading-tight text-black md:text-7xl" style={{ letterSpacing: "-0.04em" }}>
+              Every Token.
               <br />
-              Goes Live
+              Live Everywhere.
             </h1>
-            <p className="mb-8 max-w-md text-base leading-relaxed text-black/70 md:text-lg" style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}>
-              A premium launch desk for listings, meme coin platforms, DEX visibility, exchange outreach, and growth systems that make your token easier to find and trust.
+            <p className="mb-6 max-w-lg text-sm sm:text-base leading-relaxed text-black/75 md:text-lg" style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}>
+              Real-time DEX analytics across Solana, Base &amp; Ethereum, live Binance candlestick charts, automated honeypot audits, and institutional launch routes.
             </p>
-            <ArrowButton onClick={() => setPage("contact")}>Start launch</ArrowButton>
+
+            {/* Quick Token Search Input */}
+            <form onSubmit={handleHeroSearch} className="mb-6 w-full max-w-lg">
+              <div className="relative flex items-center rounded-2xl bg-white/85 p-1.5 shadow-md backdrop-blur-md ring-1 ring-black/10 focus-within:ring-2 focus-within:ring-black">
+                <Search className="ml-3 h-4 w-4 text-black/50 shrink-0" />
+                <input
+                  type="text"
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  placeholder="Scan token (e.g. PEPE, SOL, BONK, 0x...)"
+                  className="w-full bg-transparent px-3 py-1.5 text-sm text-black outline-none placeholder:text-black/45"
+                />
+                <button
+                  type="submit"
+                  className="shrink-0 rounded-xl bg-black px-4 py-2 text-xs font-semibold text-white transition hover:bg-neutral-800"
+                >
+                  Scan Token
+                </button>
+              </div>
+              <div className="mt-2.5 flex items-center gap-2 text-xs font-medium text-black/60">
+                <span className="font-semibold text-black/75">Trending:</span>
+                {["PEPE", "SOL", "BONK", "WIF", "DOGE"].map((sym) => (
+                  <button
+                    key={sym}
+                    type="button"
+                    onClick={() => {
+                      window.location.hash = `#coin/${sym.toLowerCase() === "wif" ? "dogwifhat" : sym.toLowerCase()}`;
+                      setPage("coin");
+                    }}
+                    className="rounded-full bg-white/70 px-2.5 py-0.5 text-black transition hover:bg-white"
+                  >
+                    {sym}
+                  </button>
+                ))}
+              </div>
+            </form>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <ArrowButton onClick={() => setPage("market")}>Explore Live Market</ArrowButton>
+              <button 
+                onClick={() => setPage("intel")} 
+                className="inline-flex items-center gap-2 rounded-full bg-white/80 px-6 py-3 text-base font-medium text-black shadow-sm backdrop-blur hover:bg-white transition"
+              >
+                DEX Intelligence <Search className="h-4 w-4" />
+              </button>
+            </div>
 
           </div>
           <div className="hero-listing-strip absolute bottom-0 left-0 right-0 z-20 border-t border-black/10 bg-white/88 px-4 py-4 backdrop-blur-xl md:px-8">
@@ -839,51 +928,425 @@ function HeroSection({ setPage }: { setPage: (page: PageKey) => void }) {
   );
 }
 
+function LiveMarketTickerStrip({ setPage }: { setPage: (page: PageKey) => void }) {
+  const trendingCoins = [
+    { id: "bitcoin", symbol: "BTC", price: "$96,450", change: "+2.4%" },
+    { id: "ethereum", symbol: "ETH", price: "$2,740", change: "+1.8%" },
+    { id: "solana", symbol: "SOL", price: "$184.50", change: "+5.2%" },
+    { id: "pepe", symbol: "PEPE", price: "$0.00000845", change: "+14.8%" },
+    { id: "bonk", symbol: "BONK", price: "$0.0000214", change: "+8.4%" },
+    { id: "dogwifhat", symbol: "WIF", price: "$2.48", change: "+6.2%" },
+    { id: "dogecoin", symbol: "DOGE", price: "$0.142", change: "+3.1%" },
+    { id: "sui", symbol: "SUI", price: "$3.15", change: "+9.2%" },
+  ];
+
+  return (
+    <section className="bg-[#050808] border-y border-white/10 py-4 text-white overflow-hidden">
+      <div className="mx-auto max-w-[88rem] px-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          
+          {/* Left: Live Pulse indicator & Ticker */}
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-[#DDFB6D] text-xs font-bold whitespace-nowrap">
+              <span className="w-2 h-2 rounded-full bg-[#DDFB6D] animate-ping" />
+              LIVE RADAR
+            </span>
+
+            <div className="flex items-center gap-5 text-xs font-medium whitespace-nowrap">
+              {trendingCoins.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => {
+                    window.location.hash = `#coin/${c.id}`;
+                    setPage("coin");
+                  }}
+                  className="flex items-center gap-1.5 hover:text-[#DDFB6D] transition group"
+                >
+                  <span className="text-white/60 font-bold uppercase">{c.symbol}</span>
+                  <span className="text-white font-semibold">{c.price}</span>
+                  <span className="text-[#DDFB6D] font-bold">{c.change}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Quick actions */}
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setPage("market")}
+              className="text-xs font-bold text-white/80 hover:text-white flex items-center gap-1.5 bg-white/5 border border-white/10 px-4 py-2 rounded-xl transition hover:bg-white/10"
+            >
+              <span>View All 100+ Live Coins</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#DDFB6D]" />
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function LiveTokenRadarSection({ setPage }: { setPage: (page: PageKey) => void }) {
+  const [activeTab, setActiveTab] = useState<"trending" | "solana" | "base">("trending");
+
+  const coinsData = {
+    trending: [
+      { id: "bitcoin", name: "Bitcoin", symbol: "BTC", price: "$96,450", change: "+2.4%", vol: "$42.8B", audit: "100/100 Safe", chain: "Mainnet" },
+      { id: "solana", name: "Solana", symbol: "SOL", price: "$184.50", change: "+5.2%", vol: "$3.89B", audit: "100/100 Safe", chain: "Solana" },
+      { id: "pepe", name: "Pepe", symbol: "PEPE", price: "$0.00000845", change: "+14.8%", vol: "$482.1M", audit: "98/100 Safe", chain: "Ethereum" },
+      { id: "bonk", name: "Bonk", symbol: "BONK", price: "$0.0000214", change: "+8.4%", vol: "$128.4M", audit: "96/100 Safe", chain: "Solana" },
+      { id: "dogwifhat", name: "dogwifhat", symbol: "WIF", price: "$2.48", change: "+6.2%", vol: "$214.7M", audit: "97/100 Safe", chain: "Solana" },
+    ],
+    solana: [
+      { id: "solana", name: "Solana", symbol: "SOL", price: "$184.50", change: "+5.2%", vol: "$3.89B", audit: "100/100 Safe", chain: "Solana" },
+      { id: "bonk", name: "Bonk", symbol: "BONK", price: "$0.0000214", change: "+8.4%", vol: "$128.4M", audit: "96/100 Safe", chain: "Solana" },
+      { id: "dogwifhat", name: "dogwifhat", symbol: "WIF", price: "$2.48", change: "+6.2%", vol: "$214.7M", audit: "97/100 Safe", chain: "Solana" },
+      { id: "popcat", name: "Popcat", symbol: "POPCAT", price: "$1.34", change: "+11.5%", vol: "$88.2M", audit: "95/100 Safe", chain: "Solana" },
+      { id: "jupiter-exchange-solana", name: "Jupiter", symbol: "JUP", price: "$0.92", change: "+4.1%", vol: "$94.6M", audit: "99/100 Safe", chain: "Solana" },
+    ],
+    base: [
+      { id: "brett", name: "Brett", symbol: "BRETT", price: "$0.128", change: "+18.2%", vol: "$74.5M", audit: "97/100 Safe", chain: "Base" },
+      { id: "degen-base", name: "Degen", symbol: "DEGEN", price: "$0.0084", change: "+9.1%", vol: "$31.2M", audit: "96/100 Safe", chain: "Base" },
+      { id: "toshi", name: "Toshi", symbol: "TOSHI", price: "$0.00024", change: "+7.4%", vol: "$12.8M", audit: "94/100 Safe", chain: "Base" },
+      { id: "aerodrome-finance", name: "Aerodrome", symbol: "AERO", price: "$1.15", change: "+5.8%", vol: "$45.2M", audit: "99/100 Safe", chain: "Base" },
+      { id: "virtual-protocol", name: "Virtual", symbol: "VIRTUAL", price: "$2.85", change: "+22.4%", vol: "$110.3M", audit: "98/100 Safe", chain: "Base" },
+    ],
+  };
+
+  const list = coinsData[activeTab];
+
+  return (
+    <section className="bg-[#F5F5F5] px-6 py-20 border-b border-black/5">
+      <div className="mx-auto max-w-[88rem]">
+        {/* Section Header */}
+        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <span className="px-3 py-1 rounded-full bg-black/5 text-black/70 text-xs font-bold uppercase tracking-wider">
+              Real-Time Multi-Chain Radar
+            </span>
+            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-medium leading-tight text-black" style={{ letterSpacing: "-0.03em" }}>
+              Live token analytics in your browser.
+            </h2>
+          </div>
+          <p className="max-w-md text-base text-black/60 leading-relaxed">
+            Direct on-chain order flow, liquidity pool depth, candlestick charts, and instant honeypot verification for over 5.8 million tokens.
+          </p>
+        </div>
+
+        {/* 2-Column Live Platform Preview */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          
+          {/* Left: Live Token Table Preview (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col justify-between rounded-3xl bg-white p-6 sm:p-8 ring-1 ring-black/5 shadow-sm">
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/5 pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-bold text-black text-sm">Active On-Chain Stream</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-[#F5F5F5] p-1 rounded-xl text-xs font-semibold">
+                  <button
+                    onClick={() => setActiveTab("trending")}
+                    className={`px-3 py-1.5 rounded-lg transition ${activeTab === "trending" ? "bg-black text-white" : "text-black/60 hover:text-black"}`}
+                  >
+                    Trending Memes
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("solana")}
+                    className={`px-3 py-1.5 rounded-lg transition ${activeTab === "solana" ? "bg-black text-white" : "text-black/60 hover:text-black"}`}
+                  >
+                    Solana Radar
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("base")}
+                    className={`px-3 py-1.5 rounded-lg transition ${activeTab === "base" ? "bg-black text-white" : "text-black/60 hover:text-black"}`}
+                  >
+                    Base Gems
+                  </button>
+                </div>
+              </div>
+
+              {/* Table Rows */}
+              <div className="mt-4 divide-y divide-black/5">
+                {list.map((coin, idx) => (
+                  <div
+                    key={coin.id}
+                    className="py-3.5 flex items-center justify-between gap-3 hover:bg-neutral-50 px-2 rounded-xl transition cursor-pointer"
+                    onClick={() => {
+                      window.location.hash = `#coin/${coin.id}`;
+                      setPage("coin");
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-black/30 w-4 text-center">{idx + 1}</span>
+                      <div className="w-9 h-9 rounded-full bg-black/5 flex items-center justify-center font-bold text-xs text-black ring-1 ring-black/10">
+                        {coin.symbol.slice(0, 3)}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-sm text-black">{coin.name}</span>
+                          <span className="text-[10px] font-bold text-black/40 uppercase">{coin.symbol}</span>
+                        </div>
+                        <div className="text-[11px] text-black/50 font-medium">Chain: {coin.chain}</div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="font-bold text-sm text-black">{coin.price}</div>
+                      <span className="inline-block text-xs font-bold text-emerald-600">
+                        {coin.change}
+                      </span>
+                    </div>
+
+                    <div className="hidden sm:block text-right">
+                      <div className="text-[10px] text-black/40 uppercase font-semibold">24h Vol</div>
+                      <div className="text-xs font-semibold text-black/80">{coin.vol}</div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold">
+                        <Check className="w-3 h-3" />
+                        {coin.audit}
+                      </span>
+                      <span className="w-7 h-7 rounded-full bg-black/5 flex items-center justify-center text-black/70 group-hover:bg-black group-hover:text-white transition">
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-black/5 flex items-center justify-between">
+              <span className="text-xs text-black/50">Tracking across Raydium, Uniswap, PancakeSwap &amp; Binance</span>
+              <button
+                onClick={() => setPage("market")}
+                className="text-xs font-bold text-black hover:underline inline-flex items-center gap-1"
+              >
+                <span>Open Full Terminal</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right: Instant Contract Security Scanner Card (5 cols) */}
+          <div className="lg:col-span-5 rounded-3xl bg-[#2B2644] p-6 sm:p-8 text-white flex flex-col justify-between relative overflow-hidden shadow-sm">
+            <div>
+              <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-4">
+                <span className="px-2.5 py-1 rounded-full bg-white/10 text-[#DDFB6D] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Security Engine
+                </span>
+                <span className="text-xs text-white/50 font-mono">GoPlus / DexScreener</span>
+              </div>
+
+              <div className="mt-6">
+                <h3 className="text-2xl font-medium leading-snug">
+                  Automated Rugcheck &amp;{"\n"}Honeypot Scanner
+                </h3>
+                <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                  Real-time bytecode diagnostic that runs before you trade. Protects capital against malicious mint functions and hidden sell taxes.
+                </p>
+              </div>
+
+              {/* Diagnostic Checklist */}
+              <div className="mt-6 space-y-2.5 bg-black/20 p-4 rounded-2xl border border-white/5">
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-white/60">Sample Token:</span>
+                  <span className="font-mono text-white/90">PEPE (0x6982...1933)</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-white/60">Honeypot Test:</span>
+                  <span className="text-[#DDFB6D] font-bold flex items-center gap-1">
+                    <Check className="w-3 h-3" /> PASSED (Can sell)
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-white/60">Buy / Sell Tax:</span>
+                  <span className="text-[#DDFB6D] font-bold">0.0% / 0.0%</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-white/60">LP Liquidity Lock:</span>
+                  <span className="text-[#DDFB6D] font-bold">100% Burned</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-white/60">Mint Function:</span>
+                  <span className="text-[#DDFB6D] font-bold">Revoked / Immutable</span>
+                </div>
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-white/60">Safety Score:</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[11px]">
+                    98 / 100 VERIFIED
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-white/10">
+              <button
+                onClick={() => setPage("intel")}
+                className="w-full py-3 rounded-2xl bg-white text-black font-semibold text-sm flex items-center justify-center gap-2 hover:bg-neutral-100 transition shadow-sm"
+              >
+                <Search className="w-4 h-4" />
+                <span>Audit Any Token Contract</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
 function HomePage({ setPage }: { setPage: (page: PageKey) => void }) {
   return (
     <>
       <HeroSection setPage={setPage} />
+      <LiveMarketTickerStrip setPage={setPage} />
+      <LaunchNetworkStrip />
+      <LiveTokenRadarSection setPage={setPage} />
+
       <section className="bg-[#F5F5F5] px-6 py-24">
         <div className="mx-auto max-w-[88rem]">
           <div className="mb-16 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
             <div>
               <h2 className="mb-8 text-4xl font-medium leading-tight text-black md:text-5xl" style={{ letterSpacing: "-0.03em" }}>
-                Meet the launch desk.
+                Meet the token engine.
               </h2>
-              <div className="flex flex-wrap gap-3"><ArrowButton onClick={() => setPage("ecosystem")}>Explore company</ArrowButton><button onClick={() => setPage("blog")} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-medium text-black shadow-sm">Read articles <ArrowRight className="h-4 w-4" /></button></div>
+              <div className="flex flex-wrap gap-3">
+                <ArrowButton onClick={() => setPage("market")}>Open live platform</ArrowButton>
+                <button onClick={() => setPage("booster")} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-medium text-black shadow-sm">
+                  Volume Booster <Flame className="h-4 w-4 text-orange-500" />
+                </button>
+              </div>
             </div>
             <p className="text-2xl leading-relaxed text-black/70 md:text-3xl">
-              LaunchLayer helps token teams move from contract address to market visibility with listings, campaign assets, trust signals, and a clean route across major token platforms.
+              LaunchLayer pairs real-time multi-chain DEX analytics with institutional token launch operations — giving traders and teams deep market clarity from day one.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Card 1: Live DEX Intelligence (Wide photo card) */}
             <div className="photo-card min-h-80 rounded-2xl bg-cover bg-center p-7 lg:col-span-2" style={{ backgroundImage: `url(${imageCard})` }}>
               <div className="flex min-h-80 flex-col justify-between">
-                <h3 className="text-2xl font-medium leading-snug text-black" style={{ letterSpacing: "-0.02em" }}>
-                  Visibility that compounds
-                </h3>
-                <p className="max-w-xs text-base text-black/70">
-                  Turn listings, trending moments, tracker pages, and exchange conversations into one coordinated launch flow.
-                </p>
+                <div>
+                  <span className="px-3 py-1 rounded-full bg-white/80 text-black text-xs font-bold backdrop-blur">
+                    Multi-Chain DEX Telemetry
+                  </span>
+                  <h3 className="text-2xl font-medium leading-snug text-black mt-4" style={{ letterSpacing: "-0.02em" }}>
+                    Every Token. Real-Time Analytics.
+                  </h3>
+                </div>
+                <div>
+                  <p className="max-w-md text-base text-black/80 font-medium">
+                    Live Binance kline candlestick charts, order flow, liquidity pool depth, and buy/sell transaction ratios across Raydium, Uniswap, and DEXes.
+                  </p>
+                  <button 
+                    onClick={() => setPage("market")} 
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-2.5 text-sm font-medium hover:bg-neutral-800 transition"
+                  >
+                    Explore live market <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Card 2: Smart Contract & Honeypot Audit */}
             <div className="metric-card flex min-h-80 flex-col justify-between rounded-2xl bg-[#2B2644] p-7">
-              <h3 className="whitespace-pre-line text-2xl font-medium leading-snug text-white">Always listed,{"\n"}always visible.</h3>
-              <p className="text-base text-white/60">Prepare clean submissions for DEX trackers, meme boards, and top token data platforms.</p><button onClick={() => setPage("listings")} className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">Open listings <ArrowRight className="h-4 w-4" /></button>
+              <div>
+                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-[#DDFB6D] text-[11px] font-bold uppercase tracking-wider">
+                  Security Engine
+                </span>
+                <h3 className="whitespace-pre-line text-2xl font-medium leading-snug text-white mt-3">
+                  Instant Security{"\n"}&amp; Honeypot Audit
+                </h3>
+              </div>
+              <div>
+                <p className="text-sm text-white/70 leading-relaxed">
+                  Automated rug-pull detector, 0% tax compliance, LP lock verification, and ownership renunciation scorecard.
+                </p>
+                <button onClick={() => setPage("intel")} className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">
+                  Audit a token <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
             </div>
+
+            {/* Card 3: Compare Tokens & Volume Booster */}
             <div className="metric-card flex min-h-80 flex-col justify-between rounded-2xl bg-[#2B2644] p-7">
-              <h3 className="whitespace-pre-line text-2xl font-medium leading-snug text-white">Fully{"\n"}coordinated</h3>
-              <p className="text-base text-white/60">Skip scattered launch tasks. We organize the playbook, assets, and follow-ups in one room.</p><button onClick={() => setPage("community")} className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">Community desk <ArrowRight className="h-4 w-4" /></button>
+              <div>
+                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-[#DDFB6D] text-[11px] font-bold uppercase tracking-wider">
+                  Growth &amp; Simulation
+                </span>
+                <h3 className="whitespace-pre-line text-2xl font-medium leading-snug text-white mt-3">
+                  Token Compare &amp;{"\n"}Volume Booster
+                </h3>
+              </div>
+              <div>
+                <p className="text-sm text-white/70 leading-relaxed">
+                  Compare tokens side-by-side, simulate target volume reach, and follow the playbook to trend on DEX trackers.
+                </p>
+                <button onClick={() => setPage("compare")} className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">
+                  Compare tokens <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 4 CORE PLATFORM PILLARS */}
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-6 rounded-2xl bg-white border border-black/5 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-black text-[#DDFB6D] flex items-center justify-center mb-4">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-lg text-black mb-1.5">Live Market Rankings</h4>
+              <p className="text-sm text-black/60 leading-relaxed">
+                Real-time prices, 24h volume, ATH/ATL extremes, and continuous automated Binance &amp; DEX ingestion.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-black/5 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-black text-[#DDFB6D] flex items-center justify-center mb-4">
+                <Zap className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-lg text-black mb-1.5">DEX Intelligence Hub</h4>
+              <p className="text-sm text-black/60 leading-relaxed">
+                Search any contract across Solana, Base, Ethereum &amp; BSC. View real order flow and liquidity pool depth.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-black/5 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-black text-[#DDFB6D] flex items-center justify-center mb-4">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-lg text-black mb-1.5">Automated Contract Audit</h4>
+              <p className="text-sm text-black/60 leading-relaxed">
+                Instant honeypot verification, buy/sell tax checks, LP lock status, and ownership verification scorecards.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-black/5 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-black text-[#DDFB6D] flex items-center justify-center mb-4">
+                <Rocket className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-lg text-black mb-1.5">Turnkey Launch Desk</h4>
+              <p className="text-sm text-black/60 leading-relaxed">
+                Reviewer-ready submission packs for CoinMarketCap, CoinGecko, launchpads, and tier-1 exchange outreach.
+              </p>
             </div>
           </div>
 
         </div>
-      </section><LaunchStatsSection /><UseCasesSection setPage={setPage} />
+      </section>
+
+      <LaunchStatsSection />
+      <UseCasesSection setPage={setPage} />
+      <HomeCtaSection setPage={setPage} />
     </>
   );
 }
-
 
 function AnimatedCounter({ value, suffix = "", prefix = "", decimals = 0 }: { value: number; suffix?: string; prefix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -948,11 +1411,11 @@ function LaunchStatsSection() {
     maskPosition: "center",
   };
   const stats = [
-    { value: 500, suffix: "+", label: "Launch assets prepared" },
-    { value: 99.8, decimals: 1, suffix: "%", label: "Submission readiness rate" },
-    { value: 40, suffix: "+", label: "Listing routes mapped" },
-    { value: 15, suffix: "+", label: "Launch categories supported" },
-    { value: 24, suffix: "/7", label: "Launch room coverage" },
+    { value: 5.8, decimals: 1, suffix: "M+", label: "Tokens & DEX Pools Tracked" },
+    { value: 100, suffix: "%", label: "Real-Time Feed Reliability" },
+    { value: 140, suffix: "+", label: "Chains & Networks Indexed" },
+    { value: 0, suffix: "%", label: "Honeypot Detection Delay" },
+    { value: 24, suffix: "/7", label: "Automated Continuous Sync" },
   ];
 
   return (
@@ -961,15 +1424,15 @@ function LaunchStatsSection() {
         <div className="flex flex-col items-stretch gap-16 lg:flex-row lg:gap-[160px]">
           <motion.div className="flex flex-1 flex-col justify-start" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={containerVariants}>
             <motion.h2 className="mb-6 w-[590px] max-w-full text-[clamp(1.5rem,4vw,3.5rem)] font-medium leading-[1.1] tracking-tight" variants={itemVariants}>
-              <Typewriter text="Powering Token Launches" delay={0} speed={0.012} />
+              <Typewriter text="Powering Token Analytics" delay={0} speed={0.012} />
               <br />
-              <Typewriter text="that " delay={0.25} speed={0.012} />
+              <Typewriter text="&amp; " delay={0.25} speed={0.012} />
               <span className="stats-serif italic font-normal">
-                <Typewriter text="Maximize Market Reach" delay={0.35} speed={0.012} />
+                <Typewriter text="Institutional Launches" delay={0.35} speed={0.012} />
               </span>
             </motion.h2>
             <motion.p className="mb-16 max-w-lg whitespace-normal text-base font-light leading-relaxed text-black/50 md:text-lg" variants={itemVariants}>
-              <Typewriter text="LaunchLayer gives token teams the operating system for listings, exchange outreach, community events, partner coordination, funding prep, and post-launch visibility." delay={0.1} speed={0.012} />
+              <Typewriter text="LaunchLayer gives token teams the operating system for live multi-chain DEX analytics, automated honeypot audits, exchange outreach, and post-launch volume momentum." delay={0.1} speed={0.012} />
             </motion.p>
             <motion.div className="grid grid-cols-2 gap-8 md:grid-cols-[max-content_max-content] md:gap-x-16 lg:gap-x-24" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }}>
               {stats.map((stat) => (
@@ -1003,9 +1466,51 @@ function UseCasesSection({ setPage }: { setPage: (page: PageKey) => void }) {
           <h2 className="mb-6 text-5xl font-medium leading-none text-black md:text-6xl" style={{ letterSpacing: "-0.04em" }}>
             Use modes
           </h2>
-          <p className="max-w-sm text-base leading-relaxed text-black/60">
-            LaunchLayer supports meme coins, DeFi tokens, utility projects, presales, relaunches, exchange campaigns, and ecosystem growth pushes.
+          <p className="max-w-md text-base leading-relaxed text-black/60 mb-8">
+            LaunchLayer powers the complete token lifecycle — from initial on-chain DEX deployment and meme discovery to automated honeypot auditing, liquidity scaling, and Tier-1 exchange listing.
           </p>
+
+          <div className="space-y-3.5">
+            <div className="p-5 rounded-2xl bg-white border border-black/5 hover:border-black/15 transition shadow-sm">
+              <div className="flex items-center gap-3 mb-1.5">
+                <span className="w-7 h-7 rounded-lg bg-black text-[#DDFB6D] flex items-center justify-center font-bold text-xs shrink-0">01</span>
+                <h4 className="font-bold text-black text-base">Multi-Chain Meme Discovery &amp; DEX Radar</h4>
+              </div>
+              <p className="text-sm text-black/60 pl-10 leading-relaxed">
+                Monitor newly created liquidity pools on Solana (Raydium) and Base (Aerodrome, Uniswap) before aggregators index them.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white border border-black/5 hover:border-black/15 transition shadow-sm">
+              <div className="flex items-center gap-3 mb-1.5">
+                <span className="w-7 h-7 rounded-lg bg-black text-[#DDFB6D] flex items-center justify-center font-bold text-xs shrink-0">02</span>
+                <h4 className="font-bold text-black text-base">Instant Smart Contract &amp; Rugcheck Audit</h4>
+              </div>
+              <p className="text-sm text-black/60 pl-10 leading-relaxed">
+                Pre-trade security diagnostic checking 0% tax compliance, honeypot risk, blacklist restrictions, and LP token locks.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white border border-black/5 hover:border-black/15 transition shadow-sm">
+              <div className="flex items-center gap-3 mb-1.5">
+                <span className="w-7 h-7 rounded-lg bg-black text-[#DDFB6D] flex items-center justify-center font-bold text-xs shrink-0">03</span>
+                <h4 className="font-bold text-black text-base">Token Comparison &amp; Multiplier Calculator</h4>
+              </div>
+              <p className="text-sm text-black/60 pl-10 leading-relaxed">
+                Benchmark any token against market leaders (e.g. PEPE vs DOGE) to calculate fair value, cap multipliers, and target liquidity.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white border border-black/5 hover:border-black/15 transition shadow-sm">
+              <div className="flex items-center gap-3 mb-1.5">
+                <span className="w-7 h-7 rounded-lg bg-black text-[#DDFB6D] flex items-center justify-center font-bold text-xs shrink-0">04</span>
+                <h4 className="font-bold text-black text-base">Institutional Listing Preparation</h4>
+              </div>
+              <p className="text-sm text-black/60 pl-10 leading-relaxed">
+                Complete reviewer-ready dossiers for CoinMarketCap, CoinGecko, DEX trackers, and centralized exchange outreach.
+              </p>
+            </div>
+          </div>
         </div>
         <div className="relative min-h-[720px] overflow-hidden rounded-3xl">
           <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" src={useCaseVideo} />
@@ -1024,6 +1529,49 @@ function UseCasesSection({ setPage }: { setPage: (page: PageKey) => void }) {
               Know more
             </button>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HomeCtaSection({ setPage }: { setPage: (page: PageKey) => void }) {
+  return (
+    <section className="bg-[#F5F5F5] px-6 pb-24">
+      <div className="mx-auto max-w-[88rem]">
+        <div className="relative overflow-hidden rounded-3xl bg-[#050808] p-10 md:p-16 text-white border border-white/10 shadow-xl">
+          <div className="relative z-10 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#DDFB6D] text-xs font-bold uppercase tracking-wider mb-6">
+              <Sparkles className="w-3.5 h-3.5" />
+              Institutional Launch Infrastructure
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium leading-tight tracking-tight text-white mb-6">
+              Launch, track, and scale any token with LaunchLayer.
+            </h2>
+            <p className="text-base sm:text-lg text-white/70 leading-relaxed mb-8 max-w-xl">
+              From real-time DEX liquidity telemetry and honeypot security audits to reviewer-ready CoinMarketCap dossiers and volume playbooks.
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <button
+                onClick={() => setPage("market")}
+                className="inline-flex items-center gap-2 rounded-full bg-[#DDFB6D] text-black px-6 py-3.5 text-base font-bold hover:bg-[#cbf14e] transition shadow-md"
+              >
+                <span>Explore Live Market</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPage("intel")}
+                className="inline-flex items-center gap-2 rounded-full bg-white/10 text-white px-6 py-3.5 text-base font-semibold border border-white/15 hover:bg-white/20 transition backdrop-blur"
+              >
+                <span>Run Token Audit</span>
+                <ShieldCheck className="w-4 h-4 text-[#DDFB6D]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Background Ambient Glow */}
+          <div className="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-[#7342E2]/20 blur-3xl pointer-events-none" />
+          <div className="absolute right-1/4 -top-20 w-80 h-80 rounded-full bg-[#DDFB6D]/10 blur-3xl pointer-events-none" />
         </div>
       </div>
     </section>
@@ -2158,8 +2706,7 @@ function Footer({ setPage }: { setPage: (page: PageKey) => void }) {
 }
 export default function App() {
   const [page, setPageState] = useState<PageKey>(() => {
-    const init = getInitialPage();
-    return init === "home" ? "market" : init;
+    return getInitialPage();
   });
   const [coinId, setCoinId] = useState<string>("");
 
@@ -2245,6 +2792,9 @@ export default function App() {
       {page === "exchanges" && <ExchangesPage />}
       {page === "categories" && <CategoriesPage />}
       {page === "watchlist" && <WatchlistPage setPage={setPage} />}
+      {page === "intel" && <TokenIntelPage initialTab="intel" />}
+      {page === "compare" && <TokenIntelPage initialTab="compare" />}
+      {page === "booster" && <TokenIntelPage initialTab="booster" />}
       <Footer setPage={setPage} />
     </main>
   );

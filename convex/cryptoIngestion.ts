@@ -1,7 +1,14 @@
-import { internalAction } from "./_generated/server";
+import { action, internalAction, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import { internalMutation } from "./_generated/server";
+
+export const syncLiveCoins = action({
+  args: {},
+  handler: async (ctx): Promise<boolean> => {
+    await ctx.runAction(internal.cryptoIngestion.ingestCoinMarkets);
+    return true;
+  },
+});
 
 // Using Binance public API for free ingestion
 const BINANCE_API = "https://api.binance.com/api/v3/ticker/24hr";
